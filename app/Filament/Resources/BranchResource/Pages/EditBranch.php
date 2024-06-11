@@ -1,14 +1,14 @@
 <?php
 
-namespace App\Filament\Resources\WaybillResource\Pages;
+namespace App\Filament\Resources\BranchResource\Pages;
 
-use App\Filament\Resources\WaybillResource;
+use App\Filament\Resources\BranchResource;
 use Filament\Actions;
 use Filament\Resources\Pages\EditRecord;
 
-class EditWaybill extends EditRecord
+class EditBranch extends EditRecord
 {
-    protected static string $resource = WaybillResource::class;
+    protected static string $resource = BranchResource::class;
 
     protected function getHeaderActions(): array
     {

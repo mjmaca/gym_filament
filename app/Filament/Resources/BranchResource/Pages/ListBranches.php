@@ -1,14 +1,14 @@
 <?php
 
-namespace App\Filament\Resources\VoucherResource\Pages;
+namespace App\Filament\Resources\BranchResource\Pages;
 
-use App\Filament\Resources\VoucherResource;
+use App\Filament\Resources\BranchResource;
 use Filament\Actions;
 use Filament\Resources\Pages\ListRecords;
 
-class ListVouchers extends ListRecords
+class ListBranches extends ListRecords
 {
-    protected static string $resource = VoucherResource::class;
+    protected static string $resource = BranchResource::class;
 
     protected function getHeaderActions(): array
     {
