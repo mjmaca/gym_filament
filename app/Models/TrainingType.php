@@ -10,10 +10,15 @@ class TrainingType extends Model
     use HasFactory;
 protected $fillable = [
     'description',
-    'sessions',
+    'session_number',
+    'session_price',
+    'session_duration',
+
 ];
 
 protected $casts = [
-    'sessions' => 'array',
+    'session_number' => 'integer',
+    'session_price' => 'integer',
+    'session_duration' => 'integer',
 ];
 }

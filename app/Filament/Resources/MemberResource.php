@@ -8,7 +8,6 @@ use App\Models\Member;
 use App\Models\MembershipPlan;
 use App\Models\TrainingType;
 use App\Models\GymAccessPlan;
-use Filament\Actions\CreateAction;
 use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
@@ -71,7 +70,7 @@ class MemberResource extends Resource
                             ->label("Emergency Name"),
                         Forms\Components\TextInput::make('emergency_contact')
                             ->tel()
-                            ->label("Emergency Number")
+                            ->label("Emergency Contact Number")
                             ->required(),
                     ]),
 
@@ -79,7 +78,7 @@ class MemberResource extends Resource
                     ->columns(2)
                     ->schema([
                         Forms\Components\Select::make('gym_membership_type')
-                            ->options(MembershipPlan::all()->pluck('description', 'id'))
+                            ->options(MembershipPlan::all()->pluck('description', 'description'))
                             ->label("Plan"),
                         Forms\Components\TextInput::make('gym_membership_price')
                             ->required()
@@ -125,7 +124,7 @@ class MemberResource extends Resource
                     ->columns(2)
                     ->schema([
                         Forms\Components\Select::make('gym_access_plan')
-                            ->options(GymAccessPlan::all()->pluck('description', 'id'))
+                            ->options(GymAccessPlan::all()->pluck('description', 'description'))
                             ->label('Plan'),
                         Forms\Components\TextInput::make('gym_access_price')
                             ->required()
@@ -172,7 +171,7 @@ class MemberResource extends Resource
                         Forms\Components\TextInput::make('pt_session_coach_name')
                             ->label('Coach Name'),
                         Forms\Components\Select::make('pt_session_type')
-                            ->options(TrainingType::all()->pluck('description', 'id'))
+                            ->options(TrainingType::all()->unique('description')->pluck('description', 'description'))
                             ->label('Session Type'),
                         Forms\Components\Select::make('pt_session_total')
                             ->label('Number of Sessions'),
@@ -209,11 +208,9 @@ class MemberResource extends Resource
                         Forms\Components\TextInput::make('amount')
                             ->required(),
                     ]),
-                ]);
-                
+            ]);
+
     }
-
-
 
     public static function table(Table $table): Table
     {
@@ -231,36 +228,12 @@ class MemberResource extends Resource
                     ->label('Gym Membership Type')
                     ->sortable()
                     ->searchable(),
-                Tables\Columns\TextColumn::make('gym_membership_expiration_date')
-                    ->label('Gym Membership Expiration Date')
-                    ->sortable()
-                    ->searchable(),
                 Tables\Columns\TextColumn::make('gym_access_plan')
                     ->label('Gym Access Plan')
                     ->sortable()
                     ->searchable(),
-                Tables\Columns\TextColumn::make('gym_access_expiration_date')
-                    ->label('Gym Access Expiration Date')
-                    ->sortable()
-                    ->searchable(),
                 Tables\Columns\TextColumn::make('pt_session_type')
                     ->label('PT Session Type')
-                    ->sortable()
-                    ->searchable(),
-                Tables\Columns\TextColumn::make('pt_session_coach_name')
-                    ->label('PT Session Coach Name')
-                    ->sortable()
-                    ->searchable(),
-                Tables\Columns\TextColumn::make('pt_session_expiration_date')
-                    ->label('PT Session Expiration Date')
-                    ->sortable()
-                    ->searchable(),
-                Tables\Columns\TextColumn::make('pt_session_total')
-                    ->label('PT Session Total')
-                    ->sortable()
-                    ->searchable(),
-                Tables\Columns\TextColumn::make('pt_session_used')
-                    ->label('PT Session Used')
                     ->sortable()
                     ->searchable(),
             ])
@@ -269,6 +242,10 @@ class MemberResource extends Resource
             ])
             ->actions([
                 Tables\Actions\EditAction::make(),
+                Tables\Actions\ViewAction::make(),
+                Tables\Actions\EditAction::make("Renew"),
+                // ->form(Pages\RenewMember::class),
+
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
@@ -290,6 +267,7 @@ class MemberResource extends Resource
             'index' => Pages\ListMembers::route('/'),
             'create' => Pages\CreateMember::route('/create'),
             'edit' => Pages\EditMember::route('/{record}/edit'),
+            'renew' => Pages\EditMember::route('/{record}/renew'),
         ];
     }
 }

@@ -23,23 +23,22 @@ class TrainingTypeResource extends Resource
     {
         return $form
             ->schema([
-                Forms\Components\TextInput::make('description')
-                    ->required()
-                    ->label('Description'),
-
-                Forms\Components\Repeater::make('sessions')
-                    ->schema([
-                        Forms\Components\TextInput::make('number_sessions')
-                            ->required()
-                            ->label('Session'),
-                        Forms\Components\TextInput::make('duration')
-                            ->required()
-                            ->label('Session Expiration Duration (days)'),
-                        Forms\Components\TextInput::make('price')
-                            ->required()
-                            ->label('Price'),
-                    ])
-                    ->label('Sessions')
+          
+            Forms\Components\TextInput::make('description')
+                ->label('Description')
+                ->required(),
+            Forms\Components\TextInput::make('session_number')
+                ->label('Session Number')
+                ->required()
+                ->numeric(),
+            Forms\Components\TextInput::make('session_price')
+                ->label('Session Price')
+                ->required()
+                ->numeric(),
+            Forms\Components\TextInput::make('session_duration')
+                ->label('Session Duration')
+                ->required()
+                ->numeric(),
             ]);
     }
 
@@ -50,6 +49,15 @@ class TrainingTypeResource extends Resource
                 Tables\Columns\TextColumn::make('description')
                     ->label('Description')
                     ->searchable(),
+                Tables\Columns\TextColumn::make('session_number')
+                    ->label('Session Number')
+                    ->searchable(),
+                Tables\Columns\TextColumn::make('session_price')
+                    ->label('Session Price')
+                    ->searchable(),
+                Tables\Columns\TextColumn::make('session_duration')
+                    ->label('Session Expiration Duration')
+                    ->searchable(),
             ])
             ->filters([
                 //
@@ -57,7 +65,6 @@ class TrainingTypeResource extends Resource
             ->actions([
                 Tables\Actions\EditAction::make(),
                 Tables\Actions\ViewAction::make(),
-
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
