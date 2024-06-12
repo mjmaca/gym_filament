@@ -10,6 +10,14 @@ class ListMembers extends ListRecords
 {
     protected static string $resource = MemberResource::class;
 
+    // TODO: need to connect the latest data from Member Model 
+    protected function getHeaderWidgets(): array
+    {
+        return [
+            MemberResource\Widgets\MembersOverview::class
+        ];
+    }
+
     protected function getHeaderActions(): array
     {
         return [
