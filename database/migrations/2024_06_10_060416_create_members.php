@@ -45,15 +45,19 @@ return new class extends Migration
             $table->integer('gym_membership_extension');
 
             // PT Session
-            $table->string('pt_session_coach_name');
-            $table->integer('pt_session_price');
-            $table->date('pt_session_expiration_date');
-            $table->date('pt_session_start_date');
-            $table->integer('pt_session_extension');
-            $table->string('pt_session_type');
-            $table->integer('pt_session_total');
-            $table->integer('pt_session_used');
+            $table->string('pt_session_coach_name')->nullable();
+            $table->integer('pt_session_price')->nullable();
+            $table->date('pt_session_expiration_date')->nullable();
+            $table->date('pt_session_start_date')->nullable();
+            $table->integer('pt_session_extension')->nullable();
+            $table->string('pt_session_type')->nullable();
+            $table->integer('pt_session_total')->nullable();
+            $table->integer('pt_session_used')->default(0);
             $table->timestamps();
+
+            //Payment
+            $table->string('payment_method');
+            $table->integer('amount');
         });
     }
 

@@ -43,7 +43,9 @@ protected $fillable = [
     'pt_session_extension',
     'pt_session_type',
     'pt_session_total',
-    'pt_session_used'
+    'pt_session_used',
+    'payment_method',
+    'amount'
 ];
 
 protected $casts = [

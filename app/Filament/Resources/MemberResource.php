@@ -3,16 +3,18 @@
 namespace App\Filament\Resources;
 
 use App\Filament\Resources\MemberResource\Pages;
-use App\Filament\Resources\MemberResource\RelationManagers;
+use App\Models\Branch;
 use App\Models\Member;
+use App\Models\MembershipPlan;
+use App\Models\TrainingType;
+use App\Models\GymAccessPlan;
+use Filament\Actions\CreateAction;
 use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
 use Filament\Forms\Components\Section;
-use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\SoftDeletingScope;
 
 class MemberResource extends Resource
 {
@@ -32,8 +34,12 @@ class MemberResource extends Resource
                             ->required()
                             ->unique(Member::class, 'membership_id', fn($record) => $record)
                             ->label("Membership ID"),
+                        Forms\Components\Select::make('branch_location')
+                            ->options(Branch::all()->pluck('name', 'id'))
+                            ->label("Branch Location"),
                         Forms\Components\TextInput::make('full_name')
-                            ->required(),
+                            ->required()
+                            ->label("Full Name"),
                         Forms\Components\Select::make('gender')
                             ->options([
                                 'male' => 'Male',
@@ -57,140 +63,196 @@ class MemberResource extends Resource
                             ->email()
                             ->required()
                             ->unique(Member::class, 'email', fn($record) => $record),
+                        Forms\Components\DatePicker::make('birth_date')
+                            ->required()
+                            ->label("Birth Date"),
                         Forms\Components\TextInput::make('emergency_name')
-                            ->required(),
+                            ->required()
+                            ->label("Emergency Name"),
                         Forms\Components\TextInput::make('emergency_contact')
                             ->tel()
-                            ->required(),
-                        Forms\Components\TextInput::make('branch_location')
-                            ->required(),
-                        Forms\Components\DatePicker::make('birth_date')
+                            ->label("Emergency Number")
                             ->required(),
                     ]),
 
                 Section::make('Gym Membership')
                     ->columns(2)
                     ->schema([
-                        Forms\Components\TextInput::make('gym_membership_discount'),
-                        Forms\Components\DatePicker::make('gym_membership_expiration_date'),
-                        Forms\Components\DatePicker::make('gym_membership_start_date'),
-                        Forms\Components\TextInput::make('gym_membership_price'),
-                        Forms\Components\TextInput::make('gym_membership_type'),
-                        Forms\Components\TextInput::make('gym_membership_extension'),
+                        Forms\Components\Select::make('gym_membership_type')
+                            ->options(MembershipPlan::all()->pluck('description', 'id'))
+                            ->label("Plan"),
+                        Forms\Components\TextInput::make('gym_membership_price')
+                            ->required()
+                            ->label("Price"),
+                        Forms\Components\DatePicker::make('gym_membership_start_date')
+                            ->required()
+                            ->label("Start Date"),
+                        Forms\Components\DatePicker::make('gym_membership_expiration_date')
+                            ->required()
+                            ->label("Expiration Date"),
+                        Forms\Components\Select::make('gym_membership_discount')
+                            ->required()
+                            ->label("Discount")
+                            ->options([
+                                '0' => 'Free Trial Workout',
+                                '5' => '5% Discount',
+                                '10' => '10% Discount',
+                                '15' => '15% Discount',
+                                '20' => '20% Discount',
+                                '25' => '25% Discount',
+                                '30' => '30% Discount',
+                                '35' => '35% Discount',
+                                '40' => '40% Discount',
+                                '45' => '45% Discount',
+                                '50' => '50% Discount',
+                                '55' => '55% Discount',
+                                '60' => '60% Discount',
+                                '65' => '65% Discount',
+                                '70' => '70% ssDiscount',
+                            ]),
+                        Forms\Components\Select::make('gym_membership_extension')
+                            ->required()
+                            ->label("Membership Extension")
+                            ->options([
+                                '0' => 'No Extension',
+                                '1' => '1 Month Extension',
+                                '2' => '2 Month Extension',
+                            ]),
+
                     ]),
 
                 Section::make('Gym Access')
                     ->columns(2)
                     ->schema([
-                        Forms\Components\TextInput::make('gym_access_discount'),
-                        Forms\Components\DatePicker::make('gym_access_expiration_date'),
-                        Forms\Components\DatePicker::make('gym_access_start_date'),
-                        Forms\Components\TextInput::make('gym_access_price'),
-                        Forms\Components\TextInput::make('gym_access_plan'),
-                        Forms\Components\TextInput::make('gym_access_extension'),
+                        Forms\Components\Select::make('gym_access_plan')
+                            ->options(GymAccessPlan::all()->pluck('description', 'id'))
+                            ->label('Plan'),
+                        Forms\Components\TextInput::make('gym_access_price')
+                            ->required()
+                            ->label("Price"),
+                        Forms\Components\DatePicker::make('gym_access_start_date')
+                            ->required()
+                            ->label("Start Date"),
+                        Forms\Components\DatePicker::make('gym_access_expiration_date')
+                            ->required()
+                            ->label("Expiration Date"),
+                        Forms\Components\Select::make('gym_access_discount')
+                            ->required()
+                            ->label("Discount")
+                            ->options([
+                                '0' => 'Free Trial Workout',
+                                '5' => '5% Discount',
+                                '10' => '10% Discount',
+                                '15' => '15% Discount',
+                                '20' => '20% Discount',
+                                '25' => '25% Discount',
+                                '30' => '30% Discount',
+                                '35' => '35% Discount',
+                                '40' => '40% Discount',
+                                '45' => '45% Discount',
+                                '50' => '50% Discount',
+                                '55' => '55% Discount',
+                                '60' => '60% Discount',
+                                '65' => '65% Discount',
+                                '70' => '70% ssDiscount',
+                            ]),
+                        Forms\Components\Select::make('gym_access_extension')
+                            ->required()
+                            ->label("Gym Access Extension")
+                            ->options([
+                                '0' => 'No Extension',
+                                '1' => '1 Month Extension',
+                                '2' => '2 Month Extension',
+                            ]),
                     ]),
 
                 Section::make('Personal Training')
                     ->columns(2)
                     ->schema([
-                        Forms\Components\TextInput::make('pt_session_coach_name'),
-                        Forms\Components\TextInput::make('pt_session_price'),
-                        Forms\Components\DatePicker::make('pt_session_expiration_date'),
-                        Forms\Components\DatePicker::make('pt_session_start_date'),
-                        Forms\Components\TextInput::make('pt_session_extension'),
-                        Forms\Components\TextInput::make('pt_session_type'),
-                        Forms\Components\TextInput::make('pt_session_total'),
+                        Forms\Components\TextInput::make('pt_session_coach_name')
+                            ->label('Coach Name'),
+                        Forms\Components\Select::make('pt_session_type')
+                            ->options(TrainingType::all()->pluck('description', 'id'))
+                            ->label('Session Type'),
+                        Forms\Components\Select::make('pt_session_total')
+                            ->label('Number of Sessions'),
+                        Forms\Components\TextInput::make('pt_session_price')
+                            ->numeric()
+                            ->label('Price'),
+                        Forms\Components\DatePicker::make('pt_session_expiration_date')
+                            ->label('Expiration Date'),
+                        Forms\Components\DatePicker::make('pt_session_start_date')
+                            ->label('Start Date'),
+                        Forms\Components\TextInput::make('pt_session_extension')
+                            ->numeric()
+                            ->label('Extension'),
                         Forms\Components\TextInput::make('pt_session_used')
+                            ->numeric()
+                            ->label('Sessions Used')
+                            ->default(0)
+                            ->disabled(true),
                     ]),
-            ]);
+
+                Section::make('Payment')
+                    ->columns(2)
+                    ->schema([
+                        Forms\Components\Select::make('payment_method')
+                            ->required()
+                            ->options([
+                                'Bank Transfer' => 'Bank Transfer',
+                                'Cash' => 'Cash',
+                                'Credit Card' => 'Credit Card',
+                                'Debit Card' => 'Debit Card',
+                                'Gcash' => 'Gcash',
+                                'Paymaya' => 'Paymaya',
+                            ]),
+                        Forms\Components\TextInput::make('amount')
+                            ->required(),
+                    ]),
+                ]);
+                
     }
+
+
 
     public static function table(Table $table): Table
     {
         return $table
             ->columns([
-                Tables\Columns\TextColumn::make('emergency_contact')
-                    ->label('Emergency Contact')
+                Tables\Columns\TextColumn::make('membership_id')
+                    ->label('Membership ID')
                     ->sortable()
                     ->searchable(),
-                Tables\Columns\TextColumn::make('branch_location')
-                    ->label('Branch Location')
-                    ->sortable()
-                    ->searchable(),
-                Tables\Columns\TextColumn::make('birth_date')
-                    ->label('Birth Date')
-                    ->sortable()
-                    ->searchable(),
-                Tables\Columns\TextColumn::make('gym_membership_discount')
-                    ->label('Gym Membership Discount')
-                    ->sortable()
-                    ->searchable(),
-                Tables\Columns\TextColumn::make('gym_membership_expiration_date')
-                    ->label('Gym Membership Expiration Date')
-                    ->sortable()
-                    ->searchable(),
-                Tables\Columns\TextColumn::make('gym_membership_start_date')
-                    ->label('Gym Membership Start Date')
-                    ->sortable()
-                    ->searchable(),
-                Tables\Columns\TextColumn::make('gym_membership_price')
-                    ->label('Gym Membership Price')
+                Tables\Columns\TextColumn::make('full_name')
+                    ->label('Full Name')
                     ->sortable()
                     ->searchable(),
                 Tables\Columns\TextColumn::make('gym_membership_type')
                     ->label('Gym Membership Type')
                     ->sortable()
                     ->searchable(),
-                Tables\Columns\TextColumn::make('gym_membership_extension')
-                    ->label('Gym Membership Extension')
-                    ->sortable()
-                    ->searchable(),
-                Tables\Columns\TextColumn::make('gym_access_discount')
-                    ->label('Gym Access Discount')
-                    ->sortable()
-                    ->searchable(),
-                Tables\Columns\TextColumn::make('gym_access_expiration_date')
-                    ->label('Gym Access Expiration Date')
-                    ->sortable()
-                    ->searchable(),
-                Tables\Columns\TextColumn::make('gym_access_start_date')
-                    ->label('Gym Access Start Date')
-                    ->sortable()
-                    ->searchable(),
-                Tables\Columns\TextColumn::make('gym_access_price')
-                    ->label('Gym Access Price')
+                Tables\Columns\TextColumn::make('gym_membership_expiration_date')
+                    ->label('Gym Membership Expiration Date')
                     ->sortable()
                     ->searchable(),
                 Tables\Columns\TextColumn::make('gym_access_plan')
                     ->label('Gym Access Plan')
                     ->sortable()
                     ->searchable(),
-                Tables\Columns\TextColumn::make('gym_access_extension')
-                    ->label('Gym Access Extension')
+                Tables\Columns\TextColumn::make('gym_access_expiration_date')
+                    ->label('Gym Access Expiration Date')
+                    ->sortable()
+                    ->searchable(),
+                Tables\Columns\TextColumn::make('pt_session_type')
+                    ->label('PT Session Type')
                     ->sortable()
                     ->searchable(),
                 Tables\Columns\TextColumn::make('pt_session_coach_name')
                     ->label('PT Session Coach Name')
                     ->sortable()
                     ->searchable(),
-                Tables\Columns\TextColumn::make('pt_session_price')
-                    ->label('PT Session Price')
-                    ->sortable()
-                    ->searchable(),
                 Tables\Columns\TextColumn::make('pt_session_expiration_date')
                     ->label('PT Session Expiration Date')
-                    ->sortable()
-                    ->searchable(),
-                Tables\Columns\TextColumn::make('pt_session_start_date')
-                    ->label('PT Session Start Date')
-                    ->sortable()
-                    ->searchable(),
-                Tables\Columns\TextColumn::make('pt_session_extension')
-                    ->label('PT Session Extension')
-                    ->sortable()
-                    ->searchable(),
-                Tables\Columns\TextColumn::make('pt_session_type')
-                    ->label('PT Session Type')
                     ->sortable()
                     ->searchable(),
                 Tables\Columns\TextColumn::make('pt_session_total')
