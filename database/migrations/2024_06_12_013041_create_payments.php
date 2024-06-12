@@ -11,22 +11,9 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('members', function (Blueprint $table) {
+        Schema::create('payments', function (Blueprint $table) {
             $table->id();
             $table->string('membership_id')->unique();
-            $table->string('full_name');
-            $table->string('gender');
-            $table->string('province');
-            $table->string('city');
-            $table->string('barangay');
-            $table->string('street');
-            $table->string('occupation');
-            $table->string('mobile_number');
-            $table->string('email')->unique();
-            $table->string('emergency_name');
-            $table->string('emergency_contact');
-            $table->string('branch_location');
-            $table->date('birth_date');
 
             // Gym Access
             $table->integer('gym_access_discount');
@@ -52,8 +39,14 @@ return new class extends Migration
             $table->integer('pt_session_extension')->nullable();
             $table->string('pt_session_type')->nullable();
             $table->integer('pt_session_total')->nullable();
-            $table->integer('pt_session_used')->default(0)->nullable();
+            $table->integer('pt_session_used')->default(0); // Not nullable, default value 0
+
+            // //Payment
+            $table->string('payment_method');
+            $table->integer('amount');
+
             $table->timestamps();
+
         });
     }
 
@@ -62,6 +55,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('members');
+        Schema::dropIfExists('payments');
     }
 };
