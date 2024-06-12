@@ -171,13 +171,21 @@ class MemberResource extends Resource
                         Forms\Components\TextInput::make('pt_session_coach_name')
                             ->label('Coach Name'),
                         Forms\Components\Select::make('pt_session_type')
-                            ->options(TrainingType::all()->unique('description')->pluck('description', 'description'))
-                            ->label('Session Type'),
+                            ->options(TrainingType::all()->pluck('description', 'description'))
+                            ->label('Session Type')
+                            ->live(),
                         Forms\Components\Select::make('pt_session_total')
-                            ->label('Number of Sessions'),
-                        Forms\Components\TextInput::make('pt_session_price')
-                            ->numeric()
-                            ->label('Price'),
+                            ->label('Number of Sessions')
+                            ->options(fn(Forms\Get $get) => TrainingType::where('description', $get('pt_session_type'))->pluck('session_number', 'session_number'))
+                            ->disabled(fn(Forms\Get $get): bool => !filled($get('pt_session_type')))
+                            ->live(),
+
+                        Forms\Components\Select::make('pt_session_price')
+                            ->label('Price')
+                            ->options(fn(Forms\Get $get) => TrainingType::where('session_number', $get('pt_session_total'))->pluck('session_price', 'session_price'))
+                            ->disabled(fn(Forms\Get $get): bool => !filled($get('pt_session_total'))),
+
+
                         Forms\Components\DatePicker::make('pt_session_expiration_date')
                             ->label('Expiration Date'),
                         Forms\Components\DatePicker::make('pt_session_start_date')
@@ -243,9 +251,9 @@ class MemberResource extends Resource
             ->actions([
                 Tables\Actions\EditAction::make(),
                 Tables\Actions\ViewAction::make(),
-                Tables\Actions\EditAction::make("Renew"),
-                // ->form(Pages\RenewMember::class),
-
+                // Tables\Actions\Action::make('Renew')
+                //     ->label('Renew')
+                //     ->url(fn (Member $record): string => route('members.renew', ['record' => $record])),
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
@@ -267,7 +275,7 @@ class MemberResource extends Resource
             'index' => Pages\ListMembers::route('/'),
             'create' => Pages\CreateMember::route('/create'),
             'edit' => Pages\EditMember::route('/{record}/edit'),
-            'renew' => Pages\EditMember::route('/{record}/renew'),
+            // 'renew' => Pages\RenewMember::route('/{record}/renew'),
         ];
     }
 }
