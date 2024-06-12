@@ -118,7 +118,6 @@ class MemberResource extends Resource
                                 '1' => '1 Month Extension',
                                 '2' => '2 Month Extension',
                             ]),
-
                     ]),
 
                 Section::make('Gym Access')
@@ -191,9 +190,18 @@ class MemberResource extends Resource
                             ->label('Expiration Date'),
                         Forms\Components\DatePicker::make('pt_session_start_date')
                             ->label('Start Date'),
-                        Forms\Components\TextInput::make('pt_session_extension')
-                            ->numeric()
-                            ->label('Extension'),
+                        Forms\Components\Select::make('pt_session_extension')
+                            ->required()
+                            ->label("Session Extension")
+                            ->options([
+                                '0' => 'No Extension',
+                                '1' => '1 Session',
+                                '2' => '2 Session',
+                                '3' => '2 Session',
+                                '4' => '2 Session',
+                                '5' => '2 Session',
+
+                            ]),
                         Forms\Components\TextInput::make('pt_session_used')
                             ->numeric()
                             ->label('Sessions Used')
@@ -258,7 +266,7 @@ class MemberResource extends Resource
                 Tables\Actions\ViewAction::make(),
                 Tables\Actions\Action::make("Renew")
                     ->label('Renew'),
-                    // ->url('renew'),
+                // ->url('renew'),
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
