@@ -251,8 +251,8 @@ class MemberResource extends Resource
             ->actions([
                 Tables\Actions\EditAction::make(),
                 Tables\Actions\ViewAction::make(),
-                // Tables\Actions\Action::make('Renew')
-                //     ->label('Renew')
+                Tables\Actions\Action::make('Renew')
+                    ->label('Renew')
                 //     ->url(fn (Member $record): string => route('members.renew', ['record' => $record])),
             ])
             ->bulkActions([
@@ -275,7 +275,7 @@ class MemberResource extends Resource
             'index' => Pages\ListMembers::route('/'),
             'create' => Pages\CreateMember::route('/create'),
             'edit' => Pages\EditMember::route('/{record}/edit'),
-            // 'renew' => Pages\RenewMember::route('/{record}/renew'),
+            'renew' => Pages\RenewMember::route('/{record}/renew'),
         ];
     }
 }
