@@ -1,16 +1,18 @@
 <?php
 
 namespace App\Filament\Resources\MemberResource\Pages;
+
 use App\Filament\Resources\MemberResource;
+use Filament\Actions;
 use App\Models\Payment;
 use Filament\Resources\Pages\EditRecord;
 
-class RenewMember extends EditRecord
+class Renew extends EditRecord
 {
     protected static string $resource = MemberResource::class;
 
     protected function afterSave () {
-        logger(message:"afterEdit");
+        logger(message:" Renew");
         logger($this->record);
 
         $payment = new Payment();
@@ -42,4 +44,5 @@ class RenewMember extends EditRecord
         $payment->amount = $this->record->amount;
         $payment->save();
     }
+
 }
