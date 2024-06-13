@@ -10,9 +10,12 @@ class MembershipPlan extends Model
     use HasFactory;
 
 protected $fillable = [
-    'description',
+    'type',
     'price',
     'duration',
+    'access_discount',
+    'extension_discount',
+    'price_discount'
 ];
 
 protected $casts = [

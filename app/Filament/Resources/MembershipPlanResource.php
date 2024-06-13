@@ -23,22 +23,43 @@ class MembershipPlanResource extends Resource
     {
         return $form
             ->schema([
-                Forms\Components\TextInput::make('description')
+                Forms\Components\Select::make('type')
                     ->required()
-                    ->label('Description')
-                    ->placeholder('Enter the plan description')
-                    ->maxLength(255),
+                    ->label('Type')
+                    ->placeholder('Select the plan type')
+                    ->options([
+                        'gold' => 'Gold Membership',
+                        'silver' => 'Silver Membership',
+                        'vip_siler' => 'VIP Silver Membership',
+                        'vip_white' => 'VIP White Membership',
+                        'vip_black' => 'VIP Black Membership',
+                    ]),
                 Forms\Components\TextInput::make('price')
                     ->required()
                     ->label('Price')
-                    ->numeric()
-                    ->placeholder('Enter the price in dollars'),
+                    ->prefix('PHP'),
                 Forms\Components\TextInput::make('duration')
                     ->required()
                     ->label('Duration')
                     ->numeric()
                     ->suffix('months')
                     ->placeholder('Enter the duration in months'),
+                Forms\Components\Select::make('access_discount')
+                    ->label('Access Discount')
+                    ->placeholder('Select access discount')
+                    ->options([
+                        '30' => '30%',
+                        '50' => '50%',
+                        '100' => '100%',
+                    ]),
+                Forms\Components\Select::make('extension_discount')
+                    ->label('Extension Discount')
+                    ->placeholder('Select extension discount')
+                    ->options([
+                        '0' => 'No extension',
+                        '1' => '1 Month Extension',
+                        '2' => '2 Month Extension',
+                    ]),
             ]);
     }
 

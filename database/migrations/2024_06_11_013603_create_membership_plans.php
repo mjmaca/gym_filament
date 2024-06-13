@@ -13,9 +13,12 @@ return new class extends Migration
     {
         Schema::create('membership_plans', function (Blueprint $table) {
             $table->id();
-            $table->string('description');
+            $table->string('type');
             $table->integer('price');
             $table->integer('duration'); //months
+            $table->integer('access_discount');
+            $table->integer('extension_discount');
+            $table->integer('price_discount');
             $table->timestamps();
         });
     }
