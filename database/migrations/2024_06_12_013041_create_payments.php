@@ -14,6 +14,7 @@ return new class extends Migration
         Schema::create('payments', function (Blueprint $table) {
             $table->id();
             $table->string('membership_id')->unique();
+            $table->string('branch_location');
 
             // Gym Access
             $table->integer('gym_access_discount');

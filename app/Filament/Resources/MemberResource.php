@@ -35,7 +35,7 @@ class MemberResource extends Resource
                             ->unique(Member::class, 'membership_id', fn($record) => $record)
                             ->label("Membership ID"),
                         Forms\Components\Select::make('branch_location')
-                            ->options(Branch::all()->pluck('name', 'id'))
+                            ->options(Branch::all()->pluck('name', 'name'))
                             ->label("Branch Location"),
                         Forms\Components\TextInput::make('full_name')
                             ->required()
@@ -102,9 +102,6 @@ class MemberResource extends Resource
             ->actions([
                 Tables\Actions\EditAction::make(),
                 Tables\Actions\ViewAction::make(),
-                Tables\Actions\Action::make("Renew")
-                    ->label('Renew'),
-                // ->url('renew'),
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
