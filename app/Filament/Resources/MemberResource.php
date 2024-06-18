@@ -30,8 +30,11 @@ class MemberResource extends Resource
                     ->description('This fields are the basic requirements')
                     ->columns(2)
                     ->schema([
+                        Forms\Components\Checkbox::make('is_guest')
+                            ->default(false)
+                            ->label("Is Guest"),
+
                         Forms\Components\TextInput::make('membership_id')
-                            ->required()
                             ->unique(Member::class, 'membership_id', fn($record) => $record)
                             ->label("Membership ID"),
                         Forms\Components\Select::make('branch_location')
@@ -73,6 +76,7 @@ class MemberResource extends Resource
                             ->tel()
                             ->label("Emergency Contact Number")
                             ->required(),
+
                     ]),
             ]);
 
@@ -90,11 +94,11 @@ class MemberResource extends Resource
                     ->searchable(),
                 Tables\Columns\TextColumn::make('mobile_number')
                     ->label('Mobile Number'),
-                
-                Tables\Columns\TextColumn::make('pt_session_type')
-                    ->label('PT Session Type')
+                Tables\Columns\BooleanColumn::make('is_guest')
+                    ->label('Is Guest')
                     ->sortable()
                     ->searchable(),
+
             ])
             ->filters([
                 //

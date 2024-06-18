@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::create('members', function (Blueprint $table) {
             $table->id();
-            $table->string('membership_id')->unique();
+            $table->string('membership_id')->unique()->nullable();
             $table->string('full_name');
             $table->string('gender');
             $table->string('province');
@@ -27,6 +27,7 @@ return new class extends Migration
             $table->string('emergency_contact');
             $table->string('branch_location');
             $table->date('birth_date');
+            $table->boolean('is_guest');
 
             // Gym Access
             $table->integer('gym_access_discount')->nullable();

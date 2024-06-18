@@ -20,8 +20,10 @@ class MemberTableSeeder extends Seeder
         foreach ($roles as $role) {
             for ($i = 0; $i < 20; $i++) {
                 $userId = Str::random(8);
+                $isGuest = $faker->boolean;
                 DB::table('members')->insert([
-                    'membership_id' => $userId,
+                    'is_guest' => $isGuest,
+                    'membership_id' => $isGuest ? null : $userId,
                     'full_name' => $faker->firstName . ' ' . $faker->lastName,
                     'gender' => $faker->randomElement(['male', 'female']),
                     'province' => $faker->state,

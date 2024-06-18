@@ -1,0 +1,28 @@
+<?php
+
+namespace Database\Seeders;
+
+use Illuminate\Database\Console\Seeds\WithoutModelEvents;
+use Illuminate\Database\Seeder;
+use Illuminate\Support\Facades\DB;
+
+class MembershipPlanTableSeeder extends Seeder
+{
+    /**
+     * Run the database seeds.
+     */
+    public function run(): void
+    {
+        $branches = [
+            ['type' => 'Gold Membership', 'price' => '799', 'duration' => '12'],
+            ['type' => 'Silver Membership', 'price' => '499', 'duration' => '6'],
+            ['type' => 'VIP Silver Membership', 'price' => '0', 'duration' => '12'],
+            ['type' => 'VIP White Membership', 'price' => '0', 'duration' => '12'],
+            ['type' => 'VIP Black Membership', 'price' => '0', 'duration' => '12'],
+        ];
+
+        foreach ($branches as $branch) {
+            DB::table('membership_plans')->insert($branch);
+        }
+    }
+}

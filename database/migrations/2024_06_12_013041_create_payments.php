@@ -4,8 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-return new class extends Migration
-{
+return new class extends Migration {
     /**
      * Run the migrations.
      */
@@ -13,8 +12,17 @@ return new class extends Migration
     {
         Schema::create('payments', function (Blueprint $table) {
             $table->id();
-            $table->string('membership_id');
+            $table->string('membership_id')->nullable();
+            $table->string('full_name');
             $table->string('branch_location');
+
+            // Gym Membership
+            $table->integer('gym_membership_discount')->nullable();
+            $table->date('gym_membership_expiration_date')->nullable();
+            $table->date('gym_membership_start_date')->nullable();
+            $table->integer('gym_membership_price')->nullable();
+            $table->string('gym_membership_type')->nullable();
+            $table->integer('gym_membership_extension')->nullable();
 
             // Gym Access
             $table->integer('gym_access_discount');
@@ -24,13 +32,7 @@ return new class extends Migration
             $table->string('gym_access_plan');
             $table->integer('gym_access_extension');
 
-            // Gym Membership
-            $table->integer('gym_membership_discount');
-            $table->date('gym_membership_expiration_date');
-            $table->date('gym_membership_start_date');
-            $table->integer('gym_membership_price');
-            $table->string('gym_membership_type');
-            $table->integer('gym_membership_extension');
+
 
             // PT Session
             $table->string('pt_session_coach_name')->nullable();
@@ -57,5 +59,6 @@ return new class extends Migration
     public function down(): void
     {
         Schema::dropIfExists('payments');
+        
     }
 };

@@ -16,6 +16,7 @@ class CreatePayment extends CreateRecord
     {
         $selectedMember = $this->data['selectedMember'];
         $this->data['membership_id'] = $selectedMember->membership_id;
+        $this->data['full_name'] = $selectedMember->full_name;
         $this->data['branch_location'] = $selectedMember->branch_location;
         return $this->data;
     }
@@ -23,7 +24,11 @@ class CreatePayment extends CreateRecord
 
 protected function afterCreate(): void
 {
-    $selectedMember = Member::where('membership_id', $this->record->membership_id)->first();
+    $selectedMember = $this->data['selectedMember'];
+
+    // TODO GEt the ID of member using the selectedmember id in form
+    $selectedMember = Member::where('id', $selectedMember->id)->first();
+    // $selectedMember = Member::find($selectedMember->id);
 
     $selectedMember->gym_access_discount = $this->record->gym_access_discount;
     $selectedMember->gym_access_expiration_date = $this->record->gym_access_expiration_date;

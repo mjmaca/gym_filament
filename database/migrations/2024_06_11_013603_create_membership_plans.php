@@ -16,8 +16,6 @@ return new class extends Migration
             $table->string('type');
             $table->integer('price');
             $table->integer('duration'); //months
-            $table->integer('access_discount');
-            $table->integer('extension_discount');
             $table->timestamps();
         });
     }

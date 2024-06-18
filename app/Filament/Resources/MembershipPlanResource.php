@@ -67,7 +67,7 @@ class MembershipPlanResource extends Resource
     {
         return $table
             ->columns([
-                Tables\Columns\TextColumn::make('description')
+                Tables\Columns\TextColumn::make('type')
                     ->label('Description')
                     ->sortable()
                     ->searchable(),

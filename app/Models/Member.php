@@ -24,6 +24,8 @@ protected $fillable = [
     'emergency_contact',
     'branch_location',
     'birth_date',
+    'is_guest',
+
     //optional 
     'gym_access_discount',
     'gym_access_expiration_date',

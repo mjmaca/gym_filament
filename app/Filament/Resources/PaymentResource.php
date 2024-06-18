@@ -30,21 +30,24 @@ class PaymentResource extends Resource
                 Section::make('Search Member Name')
                     ->schema([
                         Forms\Components\Select::make('membership_id')
-                            ->options(Member::all()->pluck('full_name', 'membership_id'))
-                            ->label("Membership ID")
+                            ->options(Member::all()->pluck('full_name', 'id'))
+                            ->label("Membership Name")
                             ->searchable()
                             ->required()
                             ->live()
                             ->afterStateUpdated(function (callable $set, $state) {
-                                $member = Member::where('membership_id', $state)->firstOrFail();
+                                $member = Member::where('id', $state)->firstOrFail();
                                 $set('selectedMember', $member);
                             }),
 
-
-                        // //Membership Details
+                        // // //Membership Details
+                        Forms\Components\Placeholder::make('membership_id')
+                            ->label('ID')
+                            ->content(fn($get) => $get('selectedMember.id') ?? 'Non Member')
+                            ->hidden(fn($get) => !$get('selectedMember')),
                         Forms\Components\Placeholder::make('membership_id')
                             ->label('Membership ID')
-                            ->content(fn($get) => $get('selectedMember.membership_id') ?? 'N/A')
+                            ->content(fn($get) => $get('selectedMember.membership_id') ?? 'Non Member')
                             ->hidden(fn($get) => !$get('selectedMember')),
                         Forms\Components\Placeholder::make('mobile_number')
                             ->label('Mobile Number')
@@ -62,19 +65,19 @@ class PaymentResource extends Resource
                             ->label('branch_location')
                             ->content(fn($get) => $get('selectedMember.branch_location') ?? 'N/A')
                             ->hidden(fn($get) => !$get('selectedMember')),
-
                     ]),
 
+ 
                 Section::make('Gym Membership')
                     ->columns(2)
                     ->schema([
                         Forms\Components\Select::make('gym_membership_type')
-                            ->options(GymAccessPlan::all()->pluck('description', 'description'))
+                            ->options(MembershipPlan::all()->pluck('type', 'type'))
                             ->label("Gym Membership Type")
                             ->live(),
                         Forms\Components\Select::make('gym_membership_price')
                             ->label("Gym Membership Price")
-                            ->options(fn(Forms\Get $get) => GymAccessPlan::where('description', $get('gym_membership_type'))->pluck('price', 'price'))
+                            ->options(fn(Forms\Get $get) => MembershipPlan::where('type', $get('gym_membership_type'))->pluck('price', 'price'))
                             ->disabled(fn(Forms\Get $get): bool => !filled($get('gym_membership_type'))),
                         Forms\Components\DatePicker::make('gym_membership_start_date')
                             ->label("Gym Membership Start Date")
@@ -225,6 +228,10 @@ class PaymentResource extends Resource
                     ->label('Date'),
                 Tables\Columns\TextColumn::make('membership_id')
                     ->label('Membership Id'),
+                Tables\Columns\TextColumn::make('membership_id')
+                    ->label('Membership Id'),
+                Tables\Columns\TextColumn::make('full_name')
+                    ->label('Full Name'),
                 Tables\Columns\TextColumn::make('branch_location')
                     ->label('Branch Location'),
                 Tables\Columns\TextColumn::make('payment_method')
@@ -236,7 +243,7 @@ class PaymentResource extends Resource
                 //
             ])
             ->actions([
-                // Tables\Actions\EditAction::make(),
+                Tables\Actions\ViewAction::make(),
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([

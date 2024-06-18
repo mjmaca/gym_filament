@@ -10,6 +10,7 @@ class Payment extends Model
     use HasFactory;
 protected $fillable = [
     'membership_id',
+    'full_name',
     'branch_location',
 
     'gym_access_discount',

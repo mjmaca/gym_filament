@@ -13,8 +13,6 @@ protected $fillable = [
     'type',
     'price',
     'duration',
-    'access_discount',
-    'extension_discount',
 ];
 
 protected $casts = [
