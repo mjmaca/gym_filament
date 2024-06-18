@@ -15,7 +15,6 @@ protected $fillable = [
     'duration',
     'access_discount',
     'extension_discount',
-    'price_discount'
 ];
 
 protected $casts = [

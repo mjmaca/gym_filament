@@ -64,25 +64,24 @@ class PaymentResource extends Resource
                             ->hidden(fn($get) => !$get('selectedMember')),
 
                     ]),
+
                 Section::make('Gym Membership')
                     ->columns(2)
                     ->schema([
                         Forms\Components\Select::make('gym_membership_type')
-                            ->options(MembershipPlan::all()->pluck('description', 'description'))
+                            ->options(GymAccessPlan::all()->pluck('description', 'description'))
                             ->label("Gym Membership Type")
                             ->live(),
                         Forms\Components\Select::make('gym_membership_price')
                             ->label("Gym Membership Price")
-                            ->options(fn(Forms\Get $get) => MembershipPlan::where('description', $get('gym_membership_type'))->pluck('price', 'price'))
+                            ->options(fn(Forms\Get $get) => GymAccessPlan::where('description', $get('gym_membership_type'))->pluck('price', 'price'))
                             ->disabled(fn(Forms\Get $get): bool => !filled($get('gym_membership_type'))),
-
                         Forms\Components\DatePicker::make('gym_membership_start_date')
                             ->label("Gym Membership Start Date")
                             ->default(now()->format('Y-m-d')),
                         Forms\Components\DatePicker::make('gym_membership_expiration_date')
                             ->label("Gym Membership Expiration Date"),
                         Forms\Components\Select::make('gym_membership_discount')
-                            ->required()
                             ->label("Discount")
                             ->options([
                                 '0' => 'Free Trial Workout',
@@ -102,7 +101,6 @@ class PaymentResource extends Resource
                                 '70' => '70% Discount',
                             ]),
                         Forms\Components\Select::make('gym_membership_extension')
-                            ->required()
                             ->label("Membership Extension")
                             ->options([
                                 '0' => 'No Extension',
@@ -110,15 +108,18 @@ class PaymentResource extends Resource
                                 '2' => '2 Month Extension',
                             ]),
                     ]),
+
                 Section::make('Gym Access')
                     ->columns(2)
                     ->schema([
                         Forms\Components\Select::make('gym_access_plan')
                             ->options(GymAccessPlan::all()->pluck('description', 'description'))
                             ->label("Gym Access Plan")
+                            ->required()
                             ->live(),
                         Forms\Components\Select::make('gym_access_price')
                             ->label("Gym Access Price")
+                            ->required()
                             ->options(fn(Forms\Get $get) => GymAccessPlan::where('description', $get('gym_access_plan'))->pluck('price', 'price'))
                             ->disabled(fn(Forms\Get $get): bool => !filled($get('gym_access_plan'))),
                         Forms\Components\Select::make('gym_access_discount')
@@ -151,10 +152,13 @@ class PaymentResource extends Resource
                             ]),
                         Forms\Components\DatePicker::make('gym_access_start_date')
                             ->label("Gym Access Start Date")
+                            ->required()
                             ->default(now()->format('Y-m-d')),
                         Forms\Components\DatePicker::make('gym_access_expiration_date')
+                            ->required()
                             ->label("Gym Access Expiration Date"),
                     ]),
+
                 Section::make('Personal Training')
                     ->columns(2)
                     ->schema([
@@ -194,10 +198,12 @@ class PaymentResource extends Resource
                             ->default(0)
                             ->disabled(true),
                     ]),
+
                 Section::make('Payment')
                     ->columns(2)
                     ->schema([
                         Forms\Components\Select::make('payment_method')
+                            ->required()
                             ->options([
                                 'cash' => 'Cash',
                                 'credit_card' => 'Credit Card',
@@ -205,6 +211,7 @@ class PaymentResource extends Resource
                             ])
                             ->label("Payment Method"),
                         Forms\Components\TextInput::make('amount')
+                            ->required()
                             ->label("Amount"),
                     ])
             ]);
@@ -229,7 +236,7 @@ class PaymentResource extends Resource
                 //
             ])
             ->actions([
-                Tables\Actions\EditAction::make(),
+                // Tables\Actions\EditAction::make(),
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
@@ -250,7 +257,7 @@ class PaymentResource extends Resource
         return [
             'index' => Pages\ListPayments::route('/'),
             'create' => Pages\CreatePayment::route('/create'),
-            'edit' => Pages\EditPayment::route('/{record}/edit'),
+            // 'edit' => Pages\EditPayment::route('/{record}/edit'),
         ];
     }
 }
