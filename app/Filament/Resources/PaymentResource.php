@@ -344,15 +344,12 @@ class PaymentResource extends Resource
 
         $gymMembershipDiscount = $get('gym_membership_discount') ?? 0;
         $gymAccessDiscount = $get('gym_access_discount') ?? 0;
-        logger("member".$gymMembershipDiscount);
-        logger("access".$gymAccessDiscount);
 
         $totalMembershipPrice = $gymMembershipPrice - ($gymMembershipPrice * (($gymMembershipDiscount / 100)));
         $totalAccessPrice = $gymAccessPrice - ($gymAccessPrice * (($gymAccessDiscount / 100)));
         $totalPTPrice = $ptSessionPrice;
 
         $totalAmount = $totalMembershipPrice + $totalAccessPrice + $totalPTPrice;
-        logger($totalAmount);
         return round($totalAmount, 2); // Return rounded total amount to 2 decimal places
     }
 
