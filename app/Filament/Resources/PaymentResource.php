@@ -105,7 +105,6 @@ class PaymentResource extends Resource
                             ]),
                     ]),
 
-
                 Section::make('Gym Membership')
                     ->columns(2)
                     ->schema([
@@ -276,6 +275,48 @@ class PaymentResource extends Resource
 
                     ]),
 
+                Section::make('Payment Details')
+                    ->columns(2)
+                    ->hidden(fn($get) => !$get('selectedMember'))
+                    ->schema([
+                        //Gym Membership Details 
+                        Forms\Components\Placeholder::make('gym_membership_type')
+                            ->label('Membership Plan')
+                            ->content(fn($get) => $get('gym_membership_type') ?? 'N/A'),
+                        Forms\Components\Placeholder::make('')
+                            ->content(fn($get) => 'PHP ' . number_format($get('gym_membership_price'), 2) ?? 'PHP 0.00'),    
+                        Forms\Components\Placeholder::make('gym_membership_discount')
+                            ->label('Discounted Amount')
+                            ->content(fn($get) => $get('gym_membership_discount'). '%' ?? '0%'),
+                        Forms\Components\Placeholder::make('')
+                            ->content(fn($get) => 'PHP ' . number_format($get('gym_membership_price') - ($get('gym_membership_price') * ($get('gym_membership_discount') / 100)), 2) ?? 'PHP 0.00'),
+
+                        //Gym Access Details 
+                        Forms\Components\Placeholder::make('gym_access_plan')
+                            ->label('Gym Access Plan')
+                            ->content(fn($get) => $get('gym_access_plan') ?? 'N/A'),
+                        Forms\Components\Placeholder::make('')
+                            ->content(fn($get) => 'PHP ' . number_format($get('gym_access_price'), 2) ?? 'PHP 0.00'),
+                        Forms\Components\Placeholder::make('gym_access_discount')
+                            ->label('Discounted Amount')
+                            ->content(fn($get) => $get('gym_access_discount'). '%' ?? '0%'),
+                        Forms\Components\Placeholder::make('')
+                            ->content(fn($get) => 'PHP ' . number_format($get('gym_access_price') - ($get('gym_access_price') * ($get('gym_access_discount') / 100)), 2) ?? 'PHP 0.00'),
+
+
+                        //PT Details 
+                        Forms\Components\Placeholder::make('pt_session_type')
+                            ->label('PT Session Program')
+                            ->content(fn($get) => $get('pt_session_type') ?? 'N/A'),
+                        Forms\Components\Placeholder::make('')
+                            ->content(fn($get) => 'PHP ' . number_format($get('pt_session_price'), 2) ?? 'PHP 0.00'),
+                  
+                        Forms\Components\Placeholder::make('')
+                            ->label('Total Amount'),
+                        Forms\Components\Placeholder::make('')
+                            ->content(fn($get) => 'PHP ' . number_format(self::calculateTotalAmount($get),2)),
+
+                    ]),
                 Section::make('Payment')
                     ->columns(2)
                     ->schema([
@@ -295,11 +336,11 @@ class PaymentResource extends Resource
                             }),
 
                         Forms\Components\TextInput::make('amount')
+                            ->label("Amount")
                             ->required()
                             ->numeric()
                             ->disabled()
-                            ->prefix('PHP')
-                            ->label("Amount"),
+                            ->prefix('PHP'),
                     ])
             ]);
     }
@@ -353,6 +394,23 @@ class PaymentResource extends Resource
         return round($totalAmount, 2); // Return rounded total amount to 2 decimal places
     }
 
+    public static function displayPaymentDetails($get)
+    {
+        $gymMembershipPrice = $get('gym_membership_price') ?? 0;
+        $gymAccessPrice = $get('gym_access_price') ?? 0;
+        $ptSessionPrice = $get('pt_session_price') ?? 0;
+
+        $gymMembershipDiscount = $get('gym_membership_discount') ?? 0;
+        $gymAccessDiscount = $get('gym_access_discount') ?? 0;
+
+        $totalMembershipPrice = $gymMembershipPrice - ($gymMembershipPrice * (($gymMembershipDiscount / 100)));
+        $totalAccessPrice = $gymAccessPrice - ($gymAccessPrice * (($gymAccessDiscount / 100)));
+        $totalPTPrice = $ptSessionPrice;
+
+        $totalAmount = $totalMembershipPrice + $totalAccessPrice + $totalPTPrice;
+        return round($totalAmount, 2); // Return rounded total amount to 2 decimal places
+    }
+
     public static function getRelations(): array
     {
         return [
@@ -369,3 +427,6 @@ class PaymentResource extends Resource
         ];
     }
 }
+
+
+
