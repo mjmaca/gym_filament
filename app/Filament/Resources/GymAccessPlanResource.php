@@ -53,9 +53,12 @@ class GymAccessPlanResource extends Resource
                 Tables\Columns\TextColumn::make('price')
                     ->label('Price')
                     ->sortable()
+                    ->prefix('PHP ')
+                    ->formatStateUsing(fn($record): string => number_format($record->price, 2, '.', ','))
                     ->searchable(),
                 Tables\Columns\TextColumn::make('duration')
                     ->label('Duration (days)')
+                    ->suffix(' Days')
                     ->sortable()
                     ->searchable(),
             ])

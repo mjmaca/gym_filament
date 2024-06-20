@@ -73,10 +73,13 @@ class MembershipPlanResource extends Resource
                     ->searchable(),
                 Tables\Columns\TextColumn::make('price')
                     ->label('Price')
+                    ->prefix('PHP ')
+                    ->formatStateUsing(fn($record): string => number_format($record->price, 2, '.', ','))
                     ->sortable()
                     ->searchable(),
                 Tables\Columns\TextColumn::make('duration')
                     ->label('Duration (months)')
+                    ->suffix(' Months')
                     ->sortable()
                     ->searchable(),
             ])

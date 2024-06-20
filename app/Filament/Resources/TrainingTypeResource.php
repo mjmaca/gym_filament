@@ -23,22 +23,22 @@ class TrainingTypeResource extends Resource
     {
         return $form
             ->schema([
-          
-            Forms\Components\TextInput::make('description')
-                ->label('Description')
-                ->required(),
-            Forms\Components\TextInput::make('session_number')
-                ->label('Session Number')
-                ->required()
-                ->numeric(),
-            Forms\Components\TextInput::make('session_price')
-                ->label('Session Price')
-                ->required()
-                ->numeric(),
-            Forms\Components\TextInput::make('session_duration')
-                ->label('Session Duration')
-                ->required()
-                ->numeric(),
+
+                Forms\Components\TextInput::make('description')
+                    ->label('Description')
+                    ->required(),
+                Forms\Components\TextInput::make('session_number')
+                    ->label('Session Number')
+                    ->required()
+                    ->numeric(),
+                Forms\Components\TextInput::make('session_price')
+                    ->label('Session Price')
+                    ->required()
+                    ->numeric(),
+                Forms\Components\TextInput::make('session_duration')
+                    ->label('Session Duration')
+                    ->required()
+                    ->numeric(),
             ]);
     }
 
@@ -51,11 +51,15 @@ class TrainingTypeResource extends Resource
                     ->searchable(),
                 Tables\Columns\TextColumn::make('session_number')
                     ->label('Session Number')
+                    ->suffix(' Session')
                     ->searchable(),
                 Tables\Columns\TextColumn::make('session_price')
                     ->label('Session Price')
+                    ->prefix('PHP ')
+                    ->formatStateUsing(fn($record): string => number_format($record->session_price, 2, '.', ','))
                     ->searchable(),
                 Tables\Columns\TextColumn::make('session_duration')
+                    ->suffix(' Days')
                     ->label('Session Expiration Duration')
                     ->searchable(),
             ])

@@ -362,6 +362,8 @@ class PaymentResource extends Resource
                 Tables\Columns\TextColumn::make('payment_method')
                     ->label('Payment Method'),
                 Tables\Columns\TextColumn::make('amount')
+                    ->prefix('PHP ')
+                    ->formatStateUsing(fn($record): string => number_format($record->amount, 2, '.', ','))
                     ->label('Amount'),
             ])
             ->filters([
