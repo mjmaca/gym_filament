@@ -1,13 +1,13 @@
 <?php
 
-namespace App\Filament\Resources\MemberResource\Widgets;
+namespace App\Filament\Widgets;
 
-use App\Models\Member;
-use Filament\Widgets\StatsOverviewWidget as BaseWidget;
 use Filament\Widgets\StatsOverviewWidget\Stat;
+use Filament\Widgets\StatsOverviewWidget as BaseWidget;
+use App\Models\Member;
 use Carbon\Carbon;
 
-class MembersOverview extends BaseWidget
+class DashboardMemberOverview extends BaseWidget
 {
     protected function getStats(): array
     {
@@ -23,7 +23,7 @@ class MembersOverview extends BaseWidget
 
         return [
             Stat::make('New Members', $todayMembersCount)->chart([1,2,3]),
-            Stat::make('Active Members', "??")->chart([1,2,3]),
+            Stat::make('Active Members', '??')->chart([1,2,3]),
             Stat::make('Guest', $todayGuestCount)->chart([1,2,3]),
         ];
     }
