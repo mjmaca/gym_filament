@@ -217,7 +217,8 @@ class UserResource extends Resource
 
         $settings->loadMailSettingsToConfig();
 
-        $user->notify($notification);
+        //causing error in sending email verification
+        // $user->notify($notification);
 
         Notification::make()
             ->title(__('resource.user.notifications.notification_resent.title'))

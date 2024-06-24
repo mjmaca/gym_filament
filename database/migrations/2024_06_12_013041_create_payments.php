@@ -46,7 +46,7 @@ return new class extends Migration {
 
             // //Payment
             $table->string('payment_method');
-            $table->integer('amount');
+            $table->float('amount', 8, 2);
 
             $table->timestamps();
 
