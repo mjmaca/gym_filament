@@ -30,16 +30,21 @@ class MemberResource extends Resource
                     ->description('This fields are the basic requirements')
                     ->columns(2)
                     ->schema([
-                        Forms\Components\Checkbox::make('is_guest')
-                            ->default(false)
-                            ->label("Is Guest"),
-
-                        Forms\Components\TextInput::make('membership_id')
-                            ->unique(Member::class, 'membership_id', fn($record) => $record)
-                            ->label("Membership ID"),
+                        Section::make('')
+                            ->columns(1)
+                            ->schema([
+                                Forms\Components\Checkbox::make('is_guest')
+                                    ->default(false)
+                                    ->live()
+                                    ->label("Is Guest")
+                            ]),
                         Forms\Components\Select::make('branch_location')
                             ->options(Branch::all()->pluck('name', 'name'))
                             ->label("Branch Location"),
+                        Forms\Components\TextInput::make('membership_id')
+                            ->unique(Member::class, 'membership_id', fn($record) => $record)
+                            ->disabled(fn(Forms\Get $get): bool => $get('is_guest') === true)
+                            ->label("Membership ID"),
                         Forms\Components\TextInput::make('full_name')
                             ->required()
                             ->label("Full Name"),
