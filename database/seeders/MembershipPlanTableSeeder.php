@@ -14,8 +14,8 @@ class MembershipPlanTableSeeder extends Seeder
     public function run(): void
     {
         $branches = [
-            ['type' => 'Gold Membership', 'price' => '799', 'duration' => '12'],
             ['type' => 'Silver Membership', 'price' => '499', 'duration' => '6'],
+            ['type' => 'Gold Membership', 'price' => '799', 'duration' => '12'],
             ['type' => 'VIP Silver Membership', 'price' => '0', 'duration' => '12'],
             ['type' => 'VIP White Membership', 'price' => '0', 'duration' => '12'],
             ['type' => 'VIP Black Membership', 'price' => '0', 'duration' => '12'],

@@ -112,6 +112,7 @@ class PaymentResource extends Resource
                             ->options(MembershipPlan::all()->pluck('type', 'type'))
                             ->label("Gym Membership Type")
                             ->live()
+                            ->default(MembershipPlan::first()->type)
                             ->afterStateUpdated(function (callable $set, $state, $get) {
                                 $price = MembershipPlan::where('type', $state)->value('price');
                                 $set('gym_membership_price', $price);
@@ -128,7 +129,7 @@ class PaymentResource extends Resource
                             ->label("Discount")
                             ->live()
                             ->options([
-                                '0' => 'Free Trial Workout',
+                                '0' => 'No Discount',
                                 '5' => '5% Discount',
                                 '10' => '10% Discount',
                                 '15' => '15% Discount',
@@ -144,6 +145,7 @@ class PaymentResource extends Resource
                                 '65' => '65% Discount',
                                 '70' => '70% Discount',
                             ])
+                            ->default('0')
                             ->afterStateUpdated(function (callable $set, $state, $get) {
                                 //set the current total amount when the field change
                                 $totalAmount = self::calculateTotalAmount($get);
@@ -155,7 +157,8 @@ class PaymentResource extends Resource
                                 '0' => 'No Extension',
                                 '1' => '1 Month Extension',
                                 '2' => '2 Month Extension',
-                            ]),
+                            ])
+                            ->default('0'),
                         Forms\Components\DatePicker::make('gym_membership_start_date')
                             ->label("Gym Membership Start Date")
                             ->default(now()->format('Y-m-d')),
@@ -188,7 +191,7 @@ class PaymentResource extends Resource
                             ->live()
                             ->label("Discount")
                             ->options([
-                                '0' => 'Free Trial Workout',
+                                '0' => 'No Discount',
                                 '5' => '5% Discount',
                                 '10' => '10% Discount',
                                 '15' => '15% Discount',
@@ -204,6 +207,7 @@ class PaymentResource extends Resource
                                 '65' => '65% Discount',
                                 '70' => '70% Discount',
                             ])
+                            ->default('0')
                             ->afterStateUpdated(function (callable $set, $state, $get) {
                                 //set the current total amount when the field change
                                 $totalAmount = self::calculateTotalAmount($get);
@@ -216,7 +220,8 @@ class PaymentResource extends Resource
                                 '0' => 'No Extension',
                                 '1' => '1 Month Extension',
                                 '2' => '2 Month Extension',
-                            ]),
+                            ])
+                            ->default('0'),
                         Forms\Components\DatePicker::make('gym_access_start_date')
                             ->label("Gym Access Start Date")
                             ->required()
@@ -324,10 +329,14 @@ class PaymentResource extends Resource
                             ->required()
                             ->label("Payment Method")
                             ->options([
-                                'cash' => 'Cash',
-                                'credit_card' => 'Credit Card',
-                                'online_payment' => 'Online Payment',
+                                'Bank Transfer' => 'Bank Transfer',
+                                'Cash' => 'Cash',
+                                'Credit Card' => 'Credit Card',
+                                'Debit Card' => 'Debit Card',
+                                'Gcash' => 'GCash',
+                                'Paymaya' => 'PayMaya',
                             ])
+                            ->default('Cash')
                             ->live()
                             ->afterStateUpdated(function (callable $set, $get) {
                                 // Call calculateTotalAmount function from PaymentResource class
