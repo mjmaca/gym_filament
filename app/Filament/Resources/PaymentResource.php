@@ -3,6 +3,7 @@
 namespace App\Filament\Resources;
 
 use App\Filament\Resources\PaymentResource\Pages;
+use App\Models\Coach;
 use Carbon\Carbon;
 
 use App\Models\GymAccessPlan;
@@ -43,25 +44,24 @@ class PaymentResource extends Resource
 
                                 if ($member) {
                                     //set the gym membership plan if exist in member profile
-                                    $set('gym_membership_type', $member->gym_membership_type);
-                                    $set('gym_membership_price', $member->gym_membership_price);
-                                    $set('gym_membership_discount', $member->gym_membership_discount);
-                                    $set('gym_membership_extension', $member->gym_membership_extension);
-                                    //Format to display the current data in form
+                                    // $set('gym_membership_type', $member->gym_membership_type);
+                                    // $set('gym_membership_price', $member->gym_membership_price);
+                                    // $set('gym_membership_discount', $member->gym_membership_discount);
+                                    // $set('gym_membership_extension', $member->gym_membership_extension);
                                     // $set('gym_membership_start_date', $member->gym_membership_start_date ? Carbon::parse($member->gym_membership_start_date)->format('Y-m-d') : null);
                     
                                     //set the gym access plan if exist in member profile
-                                    $set('gym_access_plan', $member->gym_access_plan);
-                                    $set('gym_access_price', $member->gym_access_price);
-                                    $set('gym_access_discount', $member->gym_access_discount);
-                                    $set('gym_access_extension', $member->gym_access_extension);
-
+                                    // $set('gym_access_plan', $member->gym_access_plan);
+                                    // $set('gym_access_price', $member->gym_access_price);
+                                    // $set('gym_access_discount', $member->gym_access_discount);
+                                    // $set('gym_access_extension', $member->gym_access_extension);
+                    
                                     //set the training type plan if exist in member profile
-                                    $set('pt_session_coach_name', $member->pt_session_coach_name);
-                                    $set('pt_session_type', $member->pt_session_type);
-                                    $set('pt_session_total', $member->pt_session_total);
-                                    $set('pt_session_price', $member->pt_session_price);
-                                    $set('pt_session_extension', $member->pt_session_extension);
+                                    // $set('pt_session_coach_name', $member->pt_session_coach_name);
+                                    // $set('pt_session_type', $member->pt_session_type);
+                                    // $set('pt_session_total', $member->pt_session_total);
+                                    // $set('pt_session_price', $member->pt_session_price);
+                                    // $set('pt_session_extension', $member->pt_session_extension);
                                 }
                             }),
 
@@ -234,7 +234,9 @@ class PaymentResource extends Resource
                 Section::make('Personal Training')
                     ->columns(2)
                     ->schema([
-                        Forms\Components\TextInput::make('pt_session_coach_name')
+                        Forms\Components\Select::make('pt_session_coach_name')
+                            //filter the coaches in the branch where the member is enroll
+                            ->options(fn($get) => $get('selectedMember') ? Coach::where('branch_location', $get('selectedMember.branch_location'))->pluck('coach_name', 'coach_name') : null)
                             ->label('Coach Name'),
                         Forms\Components\Select::make('pt_session_type')
                             ->options(TrainingType::all()->pluck('description', 'description'))
@@ -289,10 +291,10 @@ class PaymentResource extends Resource
                             ->label('Membership Plan')
                             ->content(fn($get) => $get('gym_membership_type') ?? 'N/A'),
                         Forms\Components\Placeholder::make('')
-                            ->content(fn($get) => 'PHP ' . number_format($get('gym_membership_price'), 2) ?? 'PHP 0.00'),    
+                            ->content(fn($get) => 'PHP ' . number_format($get('gym_membership_price'), 2) ?? 'PHP 0.00'),
                         Forms\Components\Placeholder::make('gym_membership_discount')
                             ->label('Discounted Amount')
-                            ->content(fn($get) => $get('gym_membership_discount'). '%' ?? '0%'),
+                            ->content(fn($get) => $get('gym_membership_discount') . '%' ?? '0%'),
                         Forms\Components\Placeholder::make('')
                             ->content(fn($get) => 'PHP ' . number_format($get('gym_membership_price') - ($get('gym_membership_price') * ($get('gym_membership_discount') / 100)), 2) ?? 'PHP 0.00'),
 
@@ -304,7 +306,7 @@ class PaymentResource extends Resource
                             ->content(fn($get) => 'PHP ' . number_format($get('gym_access_price'), 2) ?? 'PHP 0.00'),
                         Forms\Components\Placeholder::make('gym_access_discount')
                             ->label('Discounted Amount')
-                            ->content(fn($get) => $get('gym_access_discount'). '%' ?? '0%'),
+                            ->content(fn($get) => $get('gym_access_discount') . '%' ?? '0%'),
                         Forms\Components\Placeholder::make('')
                             ->content(fn($get) => 'PHP ' . number_format($get('gym_access_price') - ($get('gym_access_price') * ($get('gym_access_discount') / 100)), 2) ?? 'PHP 0.00'),
 
@@ -315,11 +317,11 @@ class PaymentResource extends Resource
                             ->content(fn($get) => $get('pt_session_type') ?? 'N/A'),
                         Forms\Components\Placeholder::make('')
                             ->content(fn($get) => 'PHP ' . number_format($get('pt_session_price'), 2) ?? 'PHP 0.00'),
-                  
+
                         Forms\Components\Placeholder::make('')
                             ->label('Total Amount'),
                         Forms\Components\Placeholder::make('')
-                            ->content(fn($get) => 'PHP ' . number_format(self::calculateTotalAmount($get),2)),
+                            ->content(fn($get) => 'PHP ' . number_format(self::calculateTotalAmount($get), 2)),
 
                     ]),
                 Section::make('Payment')
