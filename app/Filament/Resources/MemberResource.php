@@ -65,6 +65,7 @@ class MemberResource extends Resource
                             ->required(),
                         Forms\Components\TextInput::make('occupation'),
                         Forms\Components\TextInput::make('mobile_number')
+                        ->label('Mobile Number')
                             ->tel()
                             ->required(),
                         Forms\Components\TextInput::make('email')

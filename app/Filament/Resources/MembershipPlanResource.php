@@ -23,17 +23,9 @@ class MembershipPlanResource extends Resource
     {
         return $form
             ->schema([
-                Forms\Components\Select::make('type')
+                Forms\Components\TextInput::make('type')
                     ->required()
-                    ->label('Type')
-                    ->placeholder('Select the plan type')
-                    ->options([
-                        'gold' => 'Gold Membership',
-                        'silver' => 'Silver Membership',
-                        'vip_siler' => 'VIP Silver Membership',
-                        'vip_white' => 'VIP White Membership',
-                        'vip_black' => 'VIP Black Membership',
-                    ]),
+                    ->label('Type'),
                 Forms\Components\TextInput::make('price')
                     ->required()
                     ->label('Price')
@@ -44,22 +36,6 @@ class MembershipPlanResource extends Resource
                     ->numeric()
                     ->suffix('months')
                     ->placeholder('Enter the duration in months'),
-                Forms\Components\Select::make('access_discount')
-                    ->label('Access Discount')
-                    ->placeholder('Select access discount')
-                    ->options([
-                        '30' => '30%',
-                        '50' => '50%',
-                        '100' => '100%',
-                    ]),
-                Forms\Components\Select::make('extension_discount')
-                    ->label('Extension Discount')
-                    ->placeholder('Select extension discount')
-                    ->options([
-                        '0' => 'No extension',
-                        '1' => '1 Month Extension',
-                        '2' => '2 Month Extension',
-                    ]),
             ]);
     }
 

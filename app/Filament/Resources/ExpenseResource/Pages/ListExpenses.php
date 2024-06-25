@@ -16,11 +16,12 @@ class ListExpenses extends ListRecords
             ExpenseResource\Widgets\ExpensesOverview::class
         ];
     }
-    
+
     protected function getHeaderActions(): array
     {
         return [
-            Actions\CreateAction::make(),
+            Actions\CreateAction::make()
+            ->label("Create Expense"),
         ];
        
     }

@@ -10,7 +10,6 @@ class ListMembers extends ListRecords
 {
     protected static string $resource = MemberResource::class;
 
-    // TODO: need to connect the latest data from Member Model 
     protected function getHeaderWidgets(): array
     {
         return [
@@ -21,7 +20,8 @@ class ListMembers extends ListRecords
     protected function getHeaderActions(): array
     {
         return [
-            Actions\CreateAction::make(),
+            Actions\CreateAction::make()
+            ->label("Create Member"),
         ];
     }
 }

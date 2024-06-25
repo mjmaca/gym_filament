@@ -24,6 +24,13 @@ class CoachResource extends Resource
     {
         return $form
             ->schema([
+                Forms\Components\Select::make('branch_location')
+                ->options(Branch::all()->pluck('name', 'name'))
+                ->label("Branch Location")
+                ->required(),
+                Forms\Components\TextInput::make('employee_id')
+                    ->label('Employee ID')
+                    ->required(),
                 Forms\Components\TextInput::make('coach_name')
                     ->label('Coach Name')
                     ->required(),
@@ -32,13 +39,6 @@ class CoachResource extends Resource
                     ->required(),
                 Forms\Components\TextInput::make('address')
                     ->label('Address')
-                    ->required(),
-                    Forms\Components\Select::make('branch_location')
-                    ->options(Branch::all()->pluck('name', 'name'))
-                    ->label("Branch Location")
-                    ->required(),
-                Forms\Components\TextInput::make('employee_id')
-                    ->label('Employee ID')
                     ->required(),
             ]);
     }
