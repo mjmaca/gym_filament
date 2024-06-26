@@ -71,7 +71,16 @@ class UserResource extends Resource
                                 Select::make('roles')->label('Role')
                                     ->hiddenLabel()
                                     ->relationship('roles', 'name')
-                                    ->getOptionLabelFromRecordUsing(fn (Model $record) => Str::headline($record->name))
+                                    ->getOptionLabelFromRecordUsing(function (Model $record) {
+                                        if ($record->name === 'super_admin') {
+                                            return 'Owner';
+                                        } elseif ($record->name === 'admin') {
+                                            return 'Branch Manager';
+                                        } elseif ($record->name === 'cashier') {
+                                            return 'Cashier';
+                                        }
+                                        return $record->name;
+                                    })
                                     ->multiple()
                                     ->preload()
                                     ->maxItems(1)
