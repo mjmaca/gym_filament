@@ -35,7 +35,10 @@ class CoachResource extends Resource
                     ->label('Coach Name')
                     ->required(),
                 Forms\Components\TextInput::make('contact_number')
-                    ->label('Contact Number')
+                    ->prefix('+63')
+                    ->label('Mobile Number')
+                    ->tel()
+                    ->numeric()
                     ->required(),
                 Forms\Components\TextInput::make('address')
                     ->label('Address')

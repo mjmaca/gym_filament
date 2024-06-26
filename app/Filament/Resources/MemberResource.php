@@ -65,8 +65,10 @@ class MemberResource extends Resource
                             ->required(),
                         Forms\Components\TextInput::make('occupation'),
                         Forms\Components\TextInput::make('mobile_number')
-                        ->label('Mobile Number')
+                            ->prefix('+63')
+                            ->label('Mobile Number')
                             ->tel()
+                            ->numeric()
                             ->required(),
                         Forms\Components\TextInput::make('email')
                             ->email()
@@ -80,8 +82,12 @@ class MemberResource extends Resource
                             ->label("Emergency Name"),
                         Forms\Components\TextInput::make('emergency_contact')
                             ->tel()
+                            ->prefix('+63')
+                            ->numeric()
                             ->label("Emergency Contact Number")
                             ->required(),
+
+
 
                     ]),
             ]);
