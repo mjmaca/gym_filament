@@ -33,13 +33,36 @@ class MemberResource extends Resource
                                     ->default(false)
                                     ->live()
                                     ->label("Is Guest")
+                                    ->afterStateUpdated(function (callable $set, $state, $get) {
+                                        $branchCode = Branch::where('name', $get('branch_location'))->value('code');
+                                        $year = date('Y');
+                                        $lastMemberId = Member::latest()->first()->id ?? 0;
+                                        $newMemberID = $branchCode . '-' . $year . '-' . $lastMemberId;
+                                        if ($state === true) {
+                                            $set('membership_id', null);
+                                        } else {
+                                            $set('membership_id', $newMemberID);
+                                        }
+                                    }),
                             ]),
                         Forms\Components\Select::make('branch_location')
                             ->options(Branch::all()->pluck('name', 'name'))
-                            ->label("Branch Location"),
+                            ->label("Branch Location")
+                            ->live()
+                            ->afterStateUpdated(function (callable $set, $state, $get) {
+                                $branchCode = Branch::where('name', $state)->value('code');
+                                $year = date('Y');
+                                $lastMemberId = Member::latest()->first()->id ?? 0;
+                                $newMemberID = $branchCode . '-' . $year . '-' . $lastMemberId;
+                                if ($get('is_guest') === true) {
+                                    $set('membership_id', null);
+                                } else {
+                                    $set('membership_id', $newMemberID);
+                                }
+                            }),
                         Forms\Components\TextInput::make('membership_id')
                             ->unique(Member::class, 'membership_id', fn($record) => $record)
-                            ->disabled(fn(Forms\Get $get): bool => $get('is_guest') === true)
+                            ->disabled()
                             ->label("Membership ID"),
                         Forms\Components\TextInput::make('full_name')
                             ->required()
