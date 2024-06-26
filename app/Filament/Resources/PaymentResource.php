@@ -120,6 +120,10 @@ class PaymentResource extends Resource
                                 //set the current total amount when the field change
                                 $totalAmount = self::calculateTotalAmount($get);
                                 $set('amount', $totalAmount);
+
+                                //set the expidation date
+                                $membershipExpirationDate = self::calculateExpirationDateByMembership($get);
+                                $set('gym_membership_expiration_date', $membershipExpirationDate);
                             }),
                         Forms\Components\TextInput::make('gym_membership_price')
                             ->default(fn($get): string => number_format(MembershipPlan::where('type', $get('gym_membership_type'))->value('price') ?? '0', 2, '.', ','))
@@ -159,12 +163,19 @@ class PaymentResource extends Resource
                                 '1' => '1 Month Extension',
                                 '2' => '2 Month Extension',
                             ])
-                            ->default('0'),
+                            ->default('0')
+                            ->live()
+                            ->afterStateUpdated(function (callable $set, $state, $get) {
+                                //set the expidation date
+                                $membershipExpirationDate = self::calculateExpirationDateByMembership($get);
+                                $set('gym_membership_expiration_date', $membershipExpirationDate);
+                            }),
                         Forms\Components\DatePicker::make('gym_membership_start_date')
                             ->label("Gym Membership Start Date")
                             ->default(now()->format('Y-m-d')),
                         Forms\Components\DatePicker::make('gym_membership_expiration_date')
                             ->label("Gym Membership Expiration Date")
+                            ->default(now()->addMonths(6)->format('Y-m-d')) //by defaut silver is 6 months,
                     ]),
 
                 Section::make('Gym Access')
@@ -182,6 +193,10 @@ class PaymentResource extends Resource
                                 //set the current total amount when the field change
                                 $totalAmount = self::calculateTotalAmount($get);
                                 $set('amount', $totalAmount);
+
+                                //set the expidation date
+                                $gymAccessExpirationDate = self::calculateExpirationDateByGymAccess($get);
+                                $set('gym_access_expiration_date', $gymAccessExpirationDate);
                             }),
                         Forms\Components\TextInput::make('gym_access_price')
                             ->label("Gym Access Price")
@@ -223,13 +238,20 @@ class PaymentResource extends Resource
                                 '1' => '1 Month Extension',
                                 '2' => '2 Month Extension',
                             ])
-                            ->default('0'),
+                            ->default('0')
+                            ->live()
+                            ->afterStateUpdated(function (callable $set, $state, $get) {
+                                //set the expidation date
+                                $gymAccessExpirationDate = self::calculateExpirationDateByGymAccess($get);
+                                $set('gym_access_expiration_date', $gymAccessExpirationDate);
+                            }),
                         Forms\Components\DatePicker::make('gym_access_start_date')
                             ->label("Gym Access Start Date")
                             ->required()
                             ->default(now()->format('Y-m-d')),
                         Forms\Components\DatePicker::make('gym_access_expiration_date')
                             ->required()
+                            ->format('Y-m-d')
                             ->label("Gym Access Expiration Date"),
                     ]),
 
@@ -413,6 +435,50 @@ class PaymentResource extends Resource
 
         return $totalAmountFormat; // Return rounded total amount to 2 decimal places
     }
+
+    public static function calculateExpirationDateByMembership($get)
+    {
+        $getMembershipDuration = MembershipPlan::where('type', $get('gym_membership_type'))->value('duration');
+        $getMembershipExtension = $get('gym_membership_extension') ?? 0;
+        $getMembershipStartDate = $get('gym_membership_start_date');
+
+        if (empty($getMembershipDuration)) {
+            $getMembershipDuration = 0;
+        } 
+
+        if (empty($getMembershipExtension)) {
+            $getMembershipExtension = 0;
+        } 
+        
+        $totalDurationDate = $getMembershipExtension + $getMembershipDuration; 
+        $expirationDate = Carbon::parse($getMembershipStartDate)->addMonths($totalDurationDate)->format('Y-m-d');
+        return $expirationDate;
+    }
+
+    public static function calculateExpirationDateByGymAccess($get)
+    {
+        $getGymAccessDuration = GymAccessPlan::where('description', $get('gym_access_plan'))->value('duration');
+        $getGymAccessExtension = $get('gym_access_extension');
+        $getGymAccessStartDate = $get('gym_access_start_date');
+
+        if (empty($getGymAccessDuration)) {
+            $getGymAccessDuration = 0;
+        } 
+
+        if (empty($getGymAccessExtension)) {
+            $getGymAccessExtension = 0;
+        } 
+
+        if ($getGymAccessDuration == 1) {
+            $expirationDate = Carbon::parse($getGymAccessStartDate)->addDays($getGymAccessDuration)->format('Y-m-d');
+        } else {
+            $convertDaystoMonth = $getGymAccessDuration/30;
+            $totalDurationDate = $getGymAccessExtension + $convertDaystoMonth; 
+            $expirationDate = Carbon::parse($getGymAccessStartDate)->addMonths($totalDurationDate)->format('Y-m-d');
+        }
+        return $expirationDate;
+    }
+
 
     public static function getRelations(): array
     {
