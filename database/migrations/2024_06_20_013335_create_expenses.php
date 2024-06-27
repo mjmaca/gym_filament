@@ -16,6 +16,7 @@ return new class extends Migration
             $table->string('item_name');
             $table->float('amount', 8, 2);
             $table->string('staff_name');
+            $table->string('branch_location');
             $table->timestamps();
         });
     }

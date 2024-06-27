@@ -5,6 +5,7 @@ namespace App\Filament\Resources;
 use App\Filament\Resources\ExpenseResource\Pages;
 use App\Filament\Resources\ExpenseResource\RelationManagers;
 use App\Models\Expense;
+use App\Models\Branch;
 use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
@@ -23,7 +24,12 @@ class ExpenseResource extends Resource
     public static function form(Form $form): Form
     {
         return $form
+            ->columns(2)
             ->schema([
+                Forms\Components\Select::make('branch_location')
+                    ->label("Select Branch Location")
+                    ->options(Branch::all()->pluck('name', 'name'))     
+                    ->required(),
                 Forms\Components\TextInput::make('item_name')
                     ->label("Item Name")
                     ->required(),

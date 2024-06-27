@@ -109,7 +109,6 @@ class PaymentResource extends Resource
                     ->columns(2)
                     ->schema([
                         Forms\Components\Select::make('gym_membership_type')
-                            ->placeholder("Select an Option")
                             ->options(MembershipPlan::all()->pluck('type', 'type'))
                             ->label("Gym Membership Type")
                             ->live()

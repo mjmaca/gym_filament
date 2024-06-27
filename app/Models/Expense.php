@@ -13,5 +13,6 @@ protected $fillable = [
     'item_name',
     'amount',
     'staff_name',
+    'branch_location',
 ];
 }

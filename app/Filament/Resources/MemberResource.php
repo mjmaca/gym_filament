@@ -82,7 +82,8 @@ class MemberResource extends Resource
                             ->required(),
                         Forms\Components\TextInput::make('street')
                             ->required(),
-                        Forms\Components\TextInput::make('occupation'),
+                        Forms\Components\TextInput::make('occupation')
+                        ->default("None"),
                         Forms\Components\TextInput::make('mobile_number')
                             ->prefix('+63')
                             ->label('Mobile Number')
