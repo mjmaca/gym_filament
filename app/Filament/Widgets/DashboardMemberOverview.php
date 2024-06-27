@@ -8,38 +8,48 @@ use App\Models\Member;
 use App\Models\Expense;
 use App\Models\Payment;
 use Carbon\Carbon;
+use Filament\Widgets\Concerns\InteractsWithPageFilters;
 
 class DashboardMemberOverview extends BaseWidget
-{
-    protected function getStats(): array
+{     
+
+    use InteractsWithPageFilters;
+
+    protected function getStats(): array  
     {
-        $todayMembers = Member::whereDate('created_at', Carbon::today())
-        ->where('is_guest', false)
-        ->get();
-        $todayMembersCount = count($todayMembers);
+        $branchLocation = $this->filters['branch_location'] ?? null;
+        $date = $this->filters['date'] ?? null;
+        
+        logger("branchLocation:" . $branchLocation);
+        logger("date:" . $date);
 
-        $todayGuest = Member::whereDate('created_at', Carbon::today())
+        $todayMembersCount = Member::whereDate('created_at', Carbon::parse($date) ?? Carbon::today())
+            ->where('is_guest', false)
+            ->where('branch_location', $branchLocation)
+            ->count();
+
+        $todayGuestCount = Member::whereDate('created_at', Carbon::parse($date) ?? Carbon::today())
             ->where('is_guest', true)
-            ->get();
-        $todayGuestCount = count($todayGuest);
+            ->where('branch_location', $branchLocation)
+            ->count();
 
+        $thisMonthExpensesTotal = Expense::whereMonth('created_at', Carbon::now()->month)
+            ->where('branch_location', $branchLocation)
+            ->sum('amount');
 
-        $thisMonthExpenses = Expense::whereMonth('created_at', Carbon::now()->month)->get();
-        $thisMonthExpensesTotal = $thisMonthExpenses->sum('amount');
-
-        $thisMonthGrossSales = Payment::whereMonth('created_at', Carbon::now()->month)->get();
-        $thisMonthGrossSalesTotal = $thisMonthGrossSales->sum('amount');
+        $thisMonthGrossSalesTotal = Payment::whereMonth('created_at', Carbon::now()->month)
+            ->where('branch_location', $branchLocation)
+            ->sum('amount');
 
         $thisMonthNetProfit = $thisMonthGrossSalesTotal - $thisMonthExpensesTotal;
 
         return [
-            Stat::make('New Members', $todayMembersCount)->chart([1,2,3]),
-            Stat::make('Active Members', '??')->chart([1,2,3]),
-            Stat::make('Guest', $todayGuestCount)->chart([1,2,3]),
-
-            Stat::make('Total Net Profit', 'PHP '.number_format($thisMonthNetProfit, 2, '.', ','))->chart([1,2,3]),
-            Stat::make('Total Gross Sales', 'PHP '.number_format($thisMonthGrossSalesTotal, 2, '.', ','))->chart([1,2,3]),
-            Stat::make('Total Expenses', 'PHP '.number_format($thisMonthExpensesTotal, 2, '.', ','))->chart([1,2,3]),
+            Stat::make('Active Members', '??')->chart([1, 2, 3]),
+            Stat::make('New Members', $todayMembersCount)->chart([1, 2, 3]),
+            Stat::make('Guest', $todayGuestCount)->chart([1, 2, 3]),
+            Stat::make('Total Net Profit', 'PHP ' . number_format($thisMonthNetProfit, 2, '.', ','))->chart([1, 2, 3]),
+            Stat::make('Total Gross Sales', 'PHP ' . number_format($thisMonthGrossSalesTotal, 2, '.', ','))->chart([1, 2, 3]),
+            Stat::make('Total Expenses', 'PHP ' . number_format($thisMonthExpensesTotal, 2, '.', ','))->chart([1, 2, 3]),
         ];
     }
 }
