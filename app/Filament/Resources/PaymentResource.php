@@ -109,6 +109,7 @@ class PaymentResource extends Resource
                     ->columns(2)
                     ->schema([
                         Forms\Components\Select::make('gym_membership_type')
+                            ->placeholder("Select an Option")
                             ->options(MembershipPlan::all()->pluck('type', 'type'))
                             ->label("Gym Membership Type")
                             ->live()
@@ -265,7 +266,13 @@ class PaymentResource extends Resource
                         Forms\Components\Select::make('pt_session_type')
                             ->options(TrainingType::all()->pluck('description', 'description'))
                             ->label('Session Type')
-                            ->live(),
+                            ->live()
+                            ->afterStateUpdated(function (callable $set, $state, $get) {
+                                //set the expidation date
+                                $ptExpirationDate = self::calculateExpirationDateByPT($get);
+                                $set('pt_session_expiration_date', $ptExpirationDate);
+                            }),
+                            
                         Forms\Components\Select::make('pt_session_total')
                             ->label('Number of Sessions')
                             ->options(fn(Forms\Get $get) => TrainingType::where('description', $get('pt_session_type'))->pluck('session_number', 'session_number'))
@@ -278,6 +285,10 @@ class PaymentResource extends Resource
                                 //set the current total amount when the field change
                                 $totalAmount = self::calculateTotalAmount($get);
                                 $set('amount', $totalAmount);
+
+                                  //set the expidation date
+                                $ptExpirationDate = self::calculateExpirationDateByPT($get);
+                                $set('pt_session_expiration_date', $ptExpirationDate);
                             }),
                         Forms\Components\TextInput::make('pt_session_price')
                             ->label("Session Price")
@@ -299,10 +310,11 @@ class PaymentResource extends Resource
                             ->label('Sessions Used')
                             ->default(0)
                             ->disabled(true),
-                        Forms\Components\DatePicker::make('pt_session_expiration_date')
-                            ->label('Expiration Date'),
                         Forms\Components\DatePicker::make('pt_session_start_date')
                             ->label('Start Date'),
+                        Forms\Components\DatePicker::make('pt_session_expiration_date')
+                            ->label('Expiration Date'),
+
                     ]),
 
                 Section::make('Payment Details')
@@ -476,6 +488,21 @@ class PaymentResource extends Resource
             $totalDurationDate = $getGymAccessExtension + $convertDaystoMonth; 
             $expirationDate = Carbon::parse($getGymAccessStartDate)->addMonths($totalDurationDate)->format('Y-m-d');
         }
+        return $expirationDate;
+    }
+
+    public static function calculateExpirationDateByPT($get)
+    {
+        $getPTDuration = TrainingType::where('description', $get('pt_session_type'))
+        ->where('session_number', $get('pt_session_total'))
+        ->value('session_duration');
+        $getPTStartDate = $get('pt_session_start_date');
+
+        if (empty($getPTDuration)) {
+            $getPTDuration = 0;
+        } 
+
+        $expirationDate = Carbon::parse($getPTStartDate)->addDays($getPTDuration)->format('Y-m-d');
         return $expirationDate;
     }
 
