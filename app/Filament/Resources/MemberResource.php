@@ -145,7 +145,6 @@ class MemberResource extends Resource
                 ]),
             ]);
     }
-
     public static function getRelations(): array
     {
         return [
@@ -159,7 +158,6 @@ class MemberResource extends Resource
             'index' => Pages\ListMembers::route('/'),
             'create' => Pages\CreateMember::route('/create'),
             'edit' => Pages\EditMember::route('/{record}/edit'),
-            'renew' => Pages\Renew::route('/{record}/renew'),
         ];
     }
 }

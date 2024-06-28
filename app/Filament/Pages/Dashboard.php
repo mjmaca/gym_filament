@@ -1,25 +1,22 @@
 <?php
+namespace App\Filament\Pages;
 
-namespace App\Filament\Resources\MemberResource\Pages;
-
-use App\Filament\Resources\MemberResource;
-use App\Filament\Widgets\MemberOverview;
-use Filament\Forms\Form;
-use Filament\Actions;
-use Filament\Resources\Pages\ListRecords;
-use Filament\Forms\Components\Select;
+use Filament\Pages\Page;
 use Filament\Forms\Components\DatePicker;
-use App\Models\Branch;
 use Filament\Forms\Components\Section;
+use Filament\Forms\Form;
+use App\Models\Branch;
 
+use Filament\Pages\Dashboard as BasePage;
 use Filament\Pages\Dashboard\Concerns\HasFiltersForm;
+use Filament\Forms\Components\Select;
 
-class ListMembers extends ListRecords
-{    
+class Dashboard extends BasePage
+{
     use HasFiltersForm;
 
-    protected static string $resource = MemberResource::class;
-    protected static string $view = 'filament.resources.members.pages.list-members';
+    protected static ?string $navigationIcon = 'heroicon-o-home';
+    protected static string $view = 'filament.pages.dashboard';
 
     public function filtersForm(Form $form): Form
     {
@@ -38,21 +35,4 @@ class ListMembers extends ListRecords
                     ->columns(3),
             ]);
     }
-
-    protected function getWidgets(): array
-    {
-        return [
-            MemberOverview::class
-        ];
-    }
-
-    protected function getHeaderActions(): array
-    {
-        return [
-            Actions\CreateAction::make()
-                ->label("Create Member"),
-        ];
-    }
-
-   
 }

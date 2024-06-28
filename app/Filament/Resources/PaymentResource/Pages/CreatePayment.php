@@ -26,9 +26,7 @@ protected function afterCreate(): void
 {
     $selectedMember = $this->data['selectedMember'];
 
-    // TODO GEt the ID of member using the selectedmember id in form
     $selectedMember = Member::where('id', $selectedMember->id)->first();
-    // $selectedMember = Member::find($selectedMember->id);
 
     $selectedMember->gym_access_discount = $this->record->gym_access_discount;
     $selectedMember->gym_access_expiration_date = $this->record->gym_access_expiration_date;

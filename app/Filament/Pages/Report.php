@@ -3,13 +3,10 @@
 namespace App\Filament\Pages;
 
 use Filament\Pages\Page;
-use Filament\Forms;
 use Filament\Forms\Form;
 use App\Models\Branch;
-use Carbon\Carbon;
 use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\Select;
-use App\Filament\Widgets\DashboardMemberOverview;
 use Filament\Forms\Components\Section;
 use Filament\Pages\Dashboard\Concerns\HasFiltersForm;
 
@@ -19,7 +16,7 @@ class Report extends Page
 
     protected static ?string $navigationIcon = 'heroicon-o-document-text';
     protected static string $view = 'filament.pages.report';
-
+    protected static ?int $navigationSort = 3;
     public function filtersForm(Form $form): Form
     {
         return $form

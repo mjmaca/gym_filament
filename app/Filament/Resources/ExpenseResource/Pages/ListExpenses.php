@@ -3,18 +3,46 @@
 namespace App\Filament\Resources\ExpenseResource\Pages;
 
 use App\Filament\Resources\ExpenseResource;
-use App\Filament\Widgets\DashboardMemberOverview;
+use App\Filament\Widgets\SalesOverview;
 use Filament\Resources\Pages\ListRecords;
 use Filament\Actions;
+use Filament\Forms\Components\Select;
+use Filament\Forms\Components\DatePicker;
+use App\Models\Branch;
+use Filament\Forms\Form;
+use Filament\Forms\Components\Section;
+use Filament\Pages\Dashboard\Concerns\HasFiltersForm;
 
 class ListExpenses extends ListRecords
-{
+{   
+    use HasFiltersForm;
+
     protected static string $resource = ExpenseResource::class;
 
-    protected function getHeaderWidgets(): array
+    protected static string $view = 'filament.resources.expenses.pages.list-expenses';
+
+    public function filtersForm(Form $form): Form
+    {
+        return $form
+            ->schema([
+                Section::make()
+                    ->schema([
+                        Select::make('branch_location')
+                            ->label("Select Branch Location")
+                            ->options(Branch::all()->pluck('name', 'name')),
+                        DatePicker::make('start_date')
+                            ->label('Select Start Date'),
+                        DatePicker::make('end_date')
+                            ->label('Select End Date'),
+                    ])
+                    ->columns(3),
+            ]);
+    }
+
+    protected function getWidgets(): array
     {
         return [
-            DashboardMemberOverview::class
+            SalesOverview::class
         ];
     }
 
@@ -24,8 +52,5 @@ class ListExpenses extends ListRecords
             Actions\CreateAction::make()
             ->label("Create Expense"),
         ];
-       
     }
-
-
 }
