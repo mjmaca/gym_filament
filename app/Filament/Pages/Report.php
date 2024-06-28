@@ -29,18 +29,12 @@ class Report extends Page
                         Select::make('branch_location')
                             ->label("Select Branch Location")
                             ->options(Branch::all()->pluck('name', 'name')),
-                        DatePicker::make('date')
-                            ->label('Select Date'),
+                        DatePicker::make('start_date')
+                            ->label('Select Start Date'),
+                        DatePicker::make('end_date')
+                            ->label('Select End Date'),
                     ])
-                    ->columns(2),
+                    ->columns(3),
             ]);
     }
-
-    // public function getWidgets(): array
-    // {
-    //     logger("asdas");
-    //     return [
-    //         DashboardMemberOverview::make(['filters' => $this->filters]),
-    //     ];
-    // }
 }
