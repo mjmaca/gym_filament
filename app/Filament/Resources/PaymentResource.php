@@ -115,8 +115,7 @@ class PaymentResource extends Resource
                             ->default(MembershipPlan::first()->type)
                             ->afterStateUpdated(function (callable $set, $state, $get) {
                                 $price = MembershipPlan::where('type', $state)->value('price');
-                                $priceFormat = number_format($price, 2, '.', ',');
-                                $set('gym_membership_price', $priceFormat);
+                                $set('gym_membership_price', $price);
                                 //set the current total amount when the field change
                                 $totalAmount = self::calculateTotalAmount($get);
                                 $set('amount', $totalAmount);
@@ -188,8 +187,7 @@ class PaymentResource extends Resource
                             ->live()
                             ->afterStateUpdated(function (callable $set, $state, $get) {
                                 $price = GymAccessPlan::where('description', $state)->value('price');
-                                $priceFormat = number_format($price, 2, '.', ',');
-                                $set('gym_access_price', $priceFormat);
+                                $set('gym_access_price', $price);
                                 //set the current total amount when the field change
                                 $totalAmount = self::calculateTotalAmount($get);
                                 $set('amount', $totalAmount);
@@ -279,8 +277,7 @@ class PaymentResource extends Resource
                             ->live()
                             ->afterStateUpdated(function (callable $set, $state, $get) {
                                 $price = TrainingType::where('session_number', $state)->value('session_price');
-                                $priceFormat = number_format($price, 2, '.', ',');
-                                $set('pt_session_price', $priceFormat);
+                                $set('pt_session_price', $price);
                                 //set the current total amount when the field change
                                 $totalAmount = self::calculateTotalAmount($get);
                                 $set('amount', $totalAmount);
@@ -325,7 +322,7 @@ class PaymentResource extends Resource
                             ->label('Membership Plan')
                             ->content(fn($get) => $get('gym_membership_type') ?? 'N/A'),
                         Forms\Components\Placeholder::make('')
-                            ->content(fn($get) => 'PHP ' . $get('gym_membership_price') ?? 'PHP 0.00'),
+                            ->content(fn($get) => 'PHP ' .    number_format($get('gym_membership_price'), 2, '.', ',')),
                         Forms\Components\Placeholder::make('gym_membership_discount')
                             ->label('Discounted Amount')
                             ->content(fn($get) => $get('gym_membership_discount') . '%' ?? '0%'),
@@ -361,7 +358,7 @@ class PaymentResource extends Resource
                         Forms\Components\Placeholder::make('')
                             ->label('Total Amount'),
                         Forms\Components\Placeholder::make('')
-                            ->content(fn($get) => 'PHP ' . self::calculateTotalAmount($get)),
+                            ->content(fn($get) => 'PHP ' .    number_format(self::calculateTotalAmount($get), 2, '.', ',')),
                     ]),
                 Section::make('Payment')
                     ->columns(2)
@@ -442,9 +439,9 @@ class PaymentResource extends Resource
         $totalPTPrice = $ptSessionPrice;
 
         $totalAmount = $totalMembershipPrice + $totalAccessPrice + $totalPTPrice;
-        $totalAmountFormat = number_format($totalAmount, 2, '.', ',');
+        // $totalAmountFormat = number_format($totalAmount, 2, '.', ',');
 
-        return $totalAmountFormat; // Return rounded total amount to 2 decimal places
+        return $totalAmount; // Return rounded total amount to 2 decimal places
     }
 
     public static function calculateExpirationDateByMembership($get)
