@@ -3,8 +3,9 @@
 namespace App\Filament\Resources\ExpenseResource\Pages;
 
 use App\Filament\Resources\ExpenseResource;
-use Filament\Actions;
+use App\Filament\Widgets\DashboardMemberOverview;
 use Filament\Resources\Pages\ListRecords;
+use Filament\Actions;
 
 class ListExpenses extends ListRecords
 {
@@ -13,7 +14,7 @@ class ListExpenses extends ListRecords
     protected function getHeaderWidgets(): array
     {
         return [
-            ExpenseResource\Widgets\ExpensesOverview::class
+            DashboardMemberOverview::class
         ];
     }
 

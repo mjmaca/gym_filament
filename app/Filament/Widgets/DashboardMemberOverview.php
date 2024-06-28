@@ -17,6 +17,30 @@ class DashboardMemberOverview extends BaseWidget
 
     protected function getStats(): array
     {
+        //I get the path request then use to hide the othe stat below 
+        $firstRequest = request()->all();
+        // Check if 'components' key exists in $firstRequest
+        if (isset($firstRequest['components'])) {
+            $snapshotPath = $firstRequest['components'][0]['snapshot'];
+
+            // Check if $snapshotPath is a string and decode it if necessary
+            if (is_string($snapshotPath)) {
+                $snapshotPath = json_decode($snapshotPath, true);
+            }
+
+            // Now access the nested property if $snapshotPath is an array
+            if (is_array($snapshotPath) && isset($snapshotPath['memo']['path'])) {
+                $path = $snapshotPath['memo']['path'];
+                // Proceed with further logic using $path
+            } else {
+                // Handle cases where $snapshotPath or its nested properties are not as expected
+                $path = null; // or throw an error, log, etc.
+            }
+        } else {
+            // Handle case where 'components' key is not present in $firstRequest
+            $path = null; // or handle accordingly
+        }
+
         $branchLocation = $this->filters['branch_location'] ?? null;
         $startDate = $this->filters['start_date'] ?? null;
         $endDate = $this->filters['end_date'] ?? null;
@@ -42,12 +66,12 @@ class DashboardMemberOverview extends BaseWidget
         }
 
         $MembersCount = $queryMember
-        ->where('is_guest', false)
-        ->count();
+            ->where('is_guest', false)
+            ->count();
 
-        $GuestCount  = $queryMember
-        ->where('is_guest', true)
-        ->count();
+        $GuestCount = $queryMember
+            ->where('is_guest', true)
+            ->count();
 
         $thisMonthExpensesTotal = Expense::whereMonth('created_at', Carbon::now()->month)
             ->where('branch_location', $branchLocation)
@@ -59,13 +83,30 @@ class DashboardMemberOverview extends BaseWidget
 
         $thisMonthNetProfit = $thisMonthGrossSalesTotal - $thisMonthExpensesTotal;
 
-        return [
-            Stat::make('Active Members', '??')->chart([1, 2, 3]),
-            Stat::make('New Members', $MembersCount)->chart([1, 2, 3]),
-            Stat::make('Guest', $GuestCount)->chart([1, 2, 3]),
-            Stat::make('Total Net Profit', 'PHP ' . number_format($thisMonthNetProfit, 2, '.', ','))->chart([1, 2, 3]),
-            Stat::make('Total Gross Sales', 'PHP ' . number_format($thisMonthGrossSalesTotal, 2, '.', ','))->chart([1, 2, 3]),
-            Stat::make('Total Expenses', 'PHP ' . number_format($thisMonthExpensesTotal, 2, '.', ','))->chart([1, 2, 3]),
-        ];
+        
+        $stats = [];
+
+        if ($path === 'admin/members') {
+             $stats[] = Stat::make('Active Members', '??')->chart([1, 2, 3]);
+             $stats[] = Stat::make('New Members', $MembersCount)->chart([1, 2, 3]);
+             $stats[] = Stat::make('Guest', $GuestCount)->chart([1, 2, 3]);
+        }
+
+        else if ($path === 'admin/expenses') {
+            $stats[] = Stat::make('Total Net Profit', 'PHP ' . number_format($thisMonthNetProfit, 2, '.', ','))->chart([1, 2, 3]);
+            $stats[] = Stat::make('Total Gross Sales', 'PHP ' . number_format($thisMonthGrossSalesTotal, 2, '.', ','))->chart([1, 2, 3]);
+            $stats[] = Stat::make('Total Expenses', 'PHP ' . number_format($thisMonthExpensesTotal, 2, '.', ','))->chart([1, 2, 3]);
+        }
+        else {
+            $stats[] = Stat::make('Active Members', '??')->chart([1, 2, 3]);
+            $stats[] = Stat::make('New Members', $MembersCount)->chart([1, 2, 3]);
+            $stats[] = Stat::make('Guest', $GuestCount)->chart([1, 2, 3]);
+
+            $stats[] = Stat::make('Total Net Profit', 'PHP ' . number_format($thisMonthNetProfit, 2, '.', ','))->chart([1, 2, 3]);
+            $stats[] = Stat::make('Total Gross Sales', 'PHP ' . number_format($thisMonthGrossSalesTotal, 2, '.', ','))->chart([1, 2, 3]);
+            $stats[] = Stat::make('Total Expenses', 'PHP ' . number_format($thisMonthExpensesTotal, 2, '.', ','))->chart([1, 2, 3]);
+        }
+
+        return $stats;
     }
 }
