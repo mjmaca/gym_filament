@@ -16,9 +16,9 @@ class MemberOverview extends BaseWidget
     protected function getStats(): array
     {
         $branchLocation = $this->filters['branch_location'] ?? null;
-        $startDate = $this->filters['start_date'] ?? null;
-        $endDate = $this->filters['end_date'] ?? null;
 
+        $startDate = $this->filters['start_date'] ?? Carbon::today();       
+        $endDate = $this->filters['end_date'] ?? Carbon::today();
         // Initialize the query builder
         $queryMember = Member::query();
 

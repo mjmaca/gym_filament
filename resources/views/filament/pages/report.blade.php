@@ -20,38 +20,93 @@
             @endforeach
         </div>
 
-        <table class="min-w-full divide-y divide-gray-200">
-            <thead class="bg-gray-50">
-                <tr>
-                    <th scope="col"
-                        class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Gym
-                        Membership</th>
-                    <th scope="col"
-                        class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Price
-                    </th>
-                    <th scope="col"
-                        class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">No of
-                        Clients</th>
-                    <th scope="col"
-                        class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Discounts
-                    </th>
-                    <th scope="col"
-                        class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Amount
-                    </th>
-                </tr>
-            </thead>
-
-            <tbody class="bg-white divide-y divide-gray-200">
-                @foreach ($this->getMembershipPlan() as $plan)
+        <table class="min-w-full">
+            @if ($activeTab === 'Gym Membership' || $activeTab === 'Gym Access')
+                <thead class="bg-gray-50">
                     <tr>
-                        <td class="px-6 py-4 whitespace-nowrap">{{ $plan['membership_name'] }}</td>
-                        <td class="px-6 py-4 whitespace-nowrap">{{ $plan['price'] }}</td>
-                        <td class="px-6 py-4 whitespace-nowrap">{{ $plan['client_count'] }}</td>
-                        <td class="px-6 py-4 whitespace-nowrap">{{ $plan['discount'] }}</td>
-                        <td class="px-6 py-4 whitespace-nowrap">{{ $plan['amount'] }}</td>
+                        @foreach ($tableHeaderMembership as $header)
+                            <th scope="col"
+                                class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                {{ $header }}
+                            </th>
+                        @endforeach
                     </tr>
-                @endforeach
-            </tbody>
+                </thead>
+
+                <tbody class="bg-white divide-y divide-gray-200">
+                    @if ($activeTab === 'Gym Membership')
+                        @foreach ($this->getMembershipPlan() as $plan)
+                            <tr>
+                                <td class="px-6 py-4 whitespace-nowrap">{{ $plan['type'] }}</td>
+                                <td class="px-6 py-4 whitespace-nowrap">PHP {{ $plan['price'] }}</td>
+                                <td class="px-6 py-4 whitespace-nowrap">{{ $plan['client_count'] }}</td>
+                                <td class="px-6 py-4 whitespace-nowrap">PHP {{ $plan['discount'] }}</td>
+                                <td class="px-6 py-4 whitespace-nowrap">PHP {{ $plan['amount'] }}</td>
+                            </tr>
+                        @endforeach
+                    @else
+                        @foreach ($this->getAccessPlan() as $plan)
+                            <tr>
+                                <td class="px-6 py-4 whitespace-nowrap">{{ $plan['type'] }}</td>
+                                <td class="px-6 py-4 whitespace-nowrap">PHP {{ $plan['price'] }}</td>
+                                <td class="px-6 py-4 whitespace-nowrap">{{ $plan['client_count'] }}</td>
+                                <td class="px-6 py-4 whitespace-nowrap">PHP {{ $plan['discount'] }}</td>
+                                <td class="px-6 py-4 whitespace-nowrap">PHP {{ $plan['amount'] }}</td>
+                            </tr>
+                        @endforeach
+                    @endif
+                </tbody>
+            @elseif ($activeTab === 'Coaching')
+                <thead class="bg-gray-50">
+                    <tr>
+                        @foreach ($tableHeaderCoaching as $header)
+                            <th scope="col"
+                                class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                {{ $header }}
+                            </th>
+                        @endforeach
+                    </tr>
+                </thead>
+                <tbody class="bg-white divide-y divide-gray-200">
+                    @foreach ($this->getCoachingPlan() as $plan)
+                        <tr>
+                            <td class="px-6 py-4 whitespace-nowrap">{{ $plan['type'] }}</td>
+                            <td class="px-6 py-4 whitespace-nowrap">{{ $plan['1-session'] }}</td>
+                            <td class="px-6 py-4 whitespace-nowrap">{{ $plan['12-session'] }}</td>
+                            <td class="px-6 py-4 whitespace-nowrap">{{ $plan['26-session'] }}</td>
+                            <td class="px-6 py-4 whitespace-nowrap">{{ $plan['30-session'] }}</td>
+                            <td class="px-6 py-4 whitespace-nowrap">{{ $plan['60-session'] }}</td>
+                            <td class="px-6 py-4 whitespace-nowrap">{{ $plan['90-session'] }}</td>
+                            <td class="px-6 py-4 whitespace-nowrap">PHP {{ $plan['amount'] }}</td>
+                        </tr>
+                    @endforeach
+                </tbody>
+            @else
+                <thead class="bg-gray-50">
+                    <tr>
+                        @foreach ($tableHeaderSummary as $header)
+                            <th scope="col"
+                                class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                {{ $header }}
+                            </th>
+                        @endforeach
+                    </tr>
+                </thead>
+                <tbody class="bg-white divide-y divide-gray-200">
+                    @foreach ($this->getSummary() as $plan)
+                        <tr>
+                            <td class="px-6 py-4 whitespace-nowrap">{{ $plan['category'] }}</td>
+                            <td class="px-6 py-4 whitespace-nowrap">{{ $plan['total_amount'] }}</td>
+                            <td class="px-6 py-4 whitespace-nowrap">{{ $plan['cash'] }}</td>
+                            <td class="px-6 py-4 whitespace-nowrap">{{ $plan['bank'] }}</td>
+                            <td class="px-6 py-4 whitespace-nowrap">{{ $plan['credit'] }}</td>
+                            <td class="px-6 py-4 whitespace-nowrap">{{ $plan['debit'] }}</td>
+                            <td class="px-6 py-4 whitespace-nowrap">{{ $plan['gcash'] }}</td>
+                            <td class="px-6 py-4 whitespace-nowrap">{{ $plan['paymaya'] }}</td>
+                        </tr>
+                    @endforeach
+                </tbody>
+            @endif
         </table>
     </div>
 </x-filament::page>

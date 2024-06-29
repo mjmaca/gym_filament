@@ -18,8 +18,8 @@ class SalesOverview extends BaseWidget
     {
 
         $branchLocation = $this->filters['branch_location'] ?? null;
-        $startDate = $this->filters['start_date'] ?? null;
-        $endDate = $this->filters['end_date'] ?? null;
+        $startDate = $this->filters['start_date'] ?? Carbon::today();
+        $endDate = $this->filters['end_date'] ?? Carbon::today();
 
         $thisMonthExpensesTotal = Expense::whereMonth('created_at', Carbon::now()->month)
             ->where('branch_location', $branchLocation)
