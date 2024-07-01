@@ -5,17 +5,12 @@
         {{ $this->filtersForm }}
     </form>
 
-
-    {{ print_r($this->branchLocation) }}
-
     <div>
         @livewire(\App\Filament\Widgets\MemberOverview::class, ['filters' => $this->filters])
         @livewire(\App\Filament\Widgets\SalesOverview::class, ['filters' => $this->filters])
     </div>
 
     <div>
-        {{-- {{ print_r($tabList) }}
-            {{ print_r($activeTab) }} --}}
         <div class="flex space-x-4">
             @foreach ($tabList as $tab)
                 <button wire:click="activateButton('{{ $tab }}')"

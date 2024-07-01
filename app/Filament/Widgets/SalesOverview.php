@@ -17,15 +17,16 @@ class SalesOverview extends BaseWidget
     protected function getStats(): array
     {
 
-        $branchLocation = $this->filters['branch_location'] ?? null;
+        $branchLocation = $this->filters['branch_location'];
         $startDate = $this->filters['start_date'] ?? Carbon::today();
         $endDate = $this->filters['end_date'] ?? Carbon::today();
 
-        $thisMonthExpensesTotal = Expense::whereMonth('created_at', Carbon::now()->month)
+        // Apply date range filter if both dates are provided
+        $thisMonthExpensesTotal = Expense::whereBetween('created_at', [Carbon::parse($startDate)->startOfDay(), Carbon::parse($endDate)->endOfDay()])
             ->where('branch_location', $branchLocation)
             ->sum('amount');
 
-        $thisMonthGrossSalesTotal = Payment::whereMonth('created_at', Carbon::now()->month)
+        $thisMonthGrossSalesTotal = Payment::whereBetween('created_at', [Carbon::parse($startDate)->startOfDay(), Carbon::parse($endDate)->endOfDay()])
             ->where('branch_location', $branchLocation)
             ->sum('amount');
 

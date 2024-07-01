@@ -15,29 +15,15 @@ class MemberOverview extends BaseWidget
 
     protected function getStats(): array
     {
-        $branchLocation = $this->filters['branch_location'] ?? null;
+        $branchLocation = $this->filters['branch_location'];
 
-        $startDate = $this->filters['start_date'] ?? Carbon::today();       
+        $startDate = $this->filters['start_date'] ?? Carbon::today();
         $endDate = $this->filters['end_date'] ?? Carbon::today();
         // Initialize the query builder
         $queryMember = Member::query();
 
-        // Apply date range filter if both dates are provided
-        if ($startDate && $endDate) {
-            $queryMember->whereBetween('created_at', [Carbon::parse($startDate)->startOfDay(), Carbon::parse($endDate)->endOfDay()]);
-        } elseif ($startDate) {
-            // Apply only start date filter if end date is not provided
-            $queryMember->where('created_at', '>=', Carbon::parse($startDate)->startOfDay());
-
-        } elseif ($endDate) {
-            // Apply only end date filter if start date is not provided
-            $queryMember->where('created_at', '<=', Carbon::parse($endDate)->endOfDay());
-        }
-
-        // Apply branch location filter if provided
-        if ($branchLocation) {
-            $queryMember->where('branch_location', $branchLocation);
-        }
+        $queryMember->whereBetween('created_at', [Carbon::parse($startDate)->startOfDay(), Carbon::parse($endDate)->endOfDay()])
+            ->where('branch_location', $branchLocation);
 
         $memberCount = clone $queryMember;
         $guestCount = clone $queryMember;

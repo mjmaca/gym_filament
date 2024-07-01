@@ -11,6 +11,7 @@ use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Section;
 use Filament\Pages\Dashboard\Concerns\HasFiltersForm;
+use Carbon\Carbon;
 
 use App\Models\MembershipPlan;
 use App\Models\Payment;
@@ -24,7 +25,7 @@ class Report extends Page
     protected static ?int $navigationSort = 3;
 
     public $activeTab = "Gym Membership";
-    public $branchLocation = "sample gym - ";
+    public $branchLocation;
 
     public $startDate;
 
@@ -67,6 +68,14 @@ class Report extends Page
         'Paymaya',
     ];
 
+    public function mount()
+    {
+        $this->branchLocation = Branch::first()->name;
+        $this->startDate = Carbon::now();
+        $this->endDate = Carbon::today();
+    }
+
+
     public function filtersForm(Form $form): Form
     {
         return $form
@@ -76,19 +85,21 @@ class Report extends Page
                         Select::make('branch_location')
                             ->label("Select Branch Location")
                             ->options(Branch::all()->pluck('name', 'name'))
-                            ->live()
+                            ->default(Branch::first()->name)
                             ->afterStateUpdated(function (callable $set, $state) {
-                                $this->branchLocation = $state;      
+                                $this->branchLocation = $state;
                             }),
                         DatePicker::make('start_date')
                             ->label('Select Start Date')
+                            ->default(Carbon::now())
                             ->afterStateUpdated(function (callable $set, $get) {
-                                $set('startDate', $get('start_date'));                            
+                                $set('startDate', $get('start_date'));
                             }),
                         DatePicker::make('end_date')
                             ->label('Select End Date')
+                            ->default(Carbon::now())
                             ->afterStateUpdated(function (callable $set, $get) {
-                                $set('endDate', $get('end_date'));                            
+                                $set('endDate', $get('end_date'));
                             }),
                     ])
                     ->columns(3),
@@ -103,12 +114,12 @@ class Report extends Page
     public function getMembershipPlan()
     {
         $response = [];
-        logger("---->:".$this->branchLocation);
         $allData = MembershipPlan::all();
 
         foreach ($allData as $data) {
-            $getDiscount = Payment::where('gym_membership_type', $data->type)->sum('gym_membership_discount') / 100 * $data->price;
-            $getTotalClient = Payment::where('gym_membership_type', $data->type)->count();
+            $filterData = Payment::where('gym_membership_type', $data->type)->where('branch_location', $this->branchLocation);
+            $getDiscount = $filterData->sum('gym_membership_discount') / 100 * $data->price;
+            $getTotalClient = $filterData->count();
             $getAmount = ($data->price * $getTotalClient) - $getDiscount;
 
             $response[] = [
@@ -129,8 +140,9 @@ class Report extends Page
 
         $allData = GymAccessPlan::all();
         foreach ($allData as $data) {
-            $getDiscount = Payment::where('gym_access_plan', $data->description)->sum('gym_access_discount') / 100 * $data->price;
-            $getTotalClient = Payment::where('gym_access_plan', $data->description)->count();
+            $filterData = Payment::where('gym_access_plan', $data->description)->where('branch_location', $this->branchLocation);
+            $getDiscount = $filterData->sum('gym_access_discount') / 100 * $data->price;
+            $getTotalClient = $filterData->count();
             $getAmount = ($data->price * $getTotalClient) - $getDiscount;
 
             $response[] = [
@@ -164,13 +176,13 @@ class Report extends Page
             if (!$found) {
                 $response[] = [
                     'type' => $data->description,
-                    '1-session' => Payment::where('pt_session_type', $data->description)->where('pt_session_total', 1)->count(),
-                    '12-session' => Payment::where('pt_session_type', $data->description)->where('pt_session_total', 12)->count(),
-                    '26-session' => Payment::where('pt_session_type', $data->description)->where('pt_session_total', 26)->count(),
-                    '30-session' => Payment::where('pt_session_type', $data->description)->where('pt_session_total', 30)->count(),
-                    '60-session' => Payment::where('pt_session_type', $data->description)->where('pt_session_total', 60)->count(),
-                    '90-session' => Payment::where('pt_session_type', $data->description)->where('pt_session_total', 90)->count(),
-                    'amount' => number_format(Payment::where('pt_session_type', $data->description)->sum('pt_session_price'), 2, '.', ',')
+                    '1-session' => Payment::where('pt_session_type', $data->description)->where('branch_location', $this->branchLocation)->where('pt_session_total', 1)->count(),
+                    '12-session' => Payment::where('pt_session_type', $data->description)->where('branch_location', $this->branchLocation)->where('pt_session_total', 12)->count(),
+                    '26-session' => Payment::where('pt_session_type', $data->description)->where('branch_location', $this->branchLocation)->where('pt_session_total', 26)->count(),
+                    '30-session' => Payment::where('pt_session_type', $data->description)->where('branch_location', $this->branchLocation)->where('pt_session_total', 30)->count(),
+                    '60-session' => Payment::where('pt_session_type', $data->description)->where('branch_location', $this->branchLocation)->where('pt_session_total', 60)->count(),
+                    '90-session' => Payment::where('pt_session_type', $data->description)->where('branch_location', $this->branchLocation)->where('pt_session_total', 90)->count(),
+                    'amount' => number_format(Payment::where('pt_session_type', $data->description)->where('branch_location', $this->branchLocation)->sum('pt_session_price'), 2, '.', ',')
                 ];
             }
         }
@@ -180,12 +192,14 @@ class Report extends Page
 
     public function getSummary()
     {
-        $getAllPaymentByCash = Payment::where('payment_method', 'Cash')->get();
-        $getAllPaymentByBankTransfer = Payment::where('payment_method', 'Bank Transfer')->get();
-        $getAllPaymentByCreditCard = Payment::where('payment_method', 'Credit Card')->get();
-        $getAllPaymentByDebitCard = Payment::where('payment_method', 'Debit Card')->get();
-        $getAllPaymentByGcash = Payment::where('payment_method', 'Gcash')->get();
-        $getAllPaymentByPaymaya = Payment::where('payment_method', 'Paymaya')->get();
+        $filterData = Payment::where('branch_location', $this->branchLocation);
+
+        $getAllPaymentByCash = $filterData->where('payment_method', 'Cash')->get();
+        $getAllPaymentByBankTransfer = $filterData->where('payment_method', 'Bank Transfer')->get();
+        $getAllPaymentByCreditCard = $filterData->where('payment_method', 'Credit Card')->get();
+        $getAllPaymentByDebitCard = $filterData->where('payment_method', 'Debit Card')->get();
+        $getAllPaymentByGcash = $filterData->where('payment_method', 'Gcash')->get();
+        $getAllPaymentByPaymaya = $filterData->where('payment_method', 'Paymaya')->get();
 
         $getTotalAmountCashByMembership =
             $getTotalAmountBankByMembership =
