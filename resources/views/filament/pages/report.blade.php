@@ -6,12 +6,18 @@
     </form>
 
     <div>
-        @livewire(\App\Filament\Widgets\MemberOverview::class, ['filters' => $this->filters])
-        @livewire(\App\Filament\Widgets\SalesOverview::class, ['filters' => $this->filters])
+        <div class="mt-8">
+            @livewire(\App\Filament\Widgets\MemberOverview::class, ['filters' => $this->filters])
+        </div>
+
+        <div class="mt-8">
+            @livewire(\App\Filament\Widgets\SalesOverview::class, ['filters' => $this->filters])
+        </div>
+
     </div>
 
     <div>
-        <div class="flex space-x-4">
+        <div class="flex space-x-4 mb-4 mt-8">
             @foreach ($tabList as $tab)
                 <button wire:click="activateButton('{{ $tab }}')"
                     class="{{ $activeTab === $tab ? 'bg-red-500' : 'bg-blue-500' }} hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">{{ ucfirst($tab) }}</button>
