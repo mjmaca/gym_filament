@@ -21,6 +21,8 @@ class DatabaseSeeder extends Seeder
             GymAccessPlanTableSeeder::class,
             MembershipPlanTableSeeder::class,
             TrainingTypeTableSeeder::class,
+            PaymentTableSeeder::class,
+
         ]);
 
         Artisan::call('shield:generate --all');

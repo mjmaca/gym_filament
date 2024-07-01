@@ -5,6 +5,9 @@
         {{ $this->filtersForm }}
     </form>
 
+
+    {{ print_r($this->branchLocation) }}
+
     <div>
         @livewire(\App\Filament\Widgets\MemberOverview::class, ['filters' => $this->filters])
         @livewire(\App\Filament\Widgets\SalesOverview::class, ['filters' => $this->filters])

@@ -35,7 +35,7 @@ class MemberTableSeeder extends Seeder
                     'email' => $faker->unique()->safeEmail,
                     'emergency_name' => $faker->name,
                     'emergency_contact' => $faker->e164PhoneNumber,
-                    'branch_location' => $faker->randomElement(['Branch A', 'Branch B', 'Branch C']),
+                    'branch_location' => $faker->randomElement(['XGW - Francisco Homes SJDM', 'XGW - Healthway Qualimed SJDM', 'XGW - Muzon SJDM', 'XGW - Poblacion 1 SJDM', 'XGW - Baliuag Bulacan', 'XGW - Bocaue Bulacan', 'XGW - Santa Maria Bulacan', 'ATL - Bacoor Cavite', 'CF - Sapangpalay SJDM', 'FP - BF Resorts Laspiñas']),
                     'birth_date' => $faker->date(),
                     // 'gym_access_discount' => $faker->numberBetween(0, 50),
                     // 'gym_access_expiration_date' => $faker->dateTimeBetween('+1 month', '+1 year')->format('Y-m-d'),

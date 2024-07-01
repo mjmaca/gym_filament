@@ -24,6 +24,11 @@ class Report extends Page
     protected static ?int $navigationSort = 3;
 
     public $activeTab = "Gym Membership";
+    public $branchLocation = "sample gym - ";
+
+    public $startDate;
+
+    public $endDate;
 
     public $tabList = [
         'membership' => 'Gym Membership',
@@ -70,11 +75,21 @@ class Report extends Page
                     ->schema([
                         Select::make('branch_location')
                             ->label("Select Branch Location")
-                            ->options(Branch::all()->pluck('name', 'name')),
+                            ->options(Branch::all()->pluck('name', 'name'))
+                            ->live()
+                            ->afterStateUpdated(function (callable $set, $state) {
+                                $this->branchLocation = $state;      
+                            }),
                         DatePicker::make('start_date')
-                            ->label('Select Start Date'),
+                            ->label('Select Start Date')
+                            ->afterStateUpdated(function (callable $set, $get) {
+                                $set('startDate', $get('start_date'));                            
+                            }),
                         DatePicker::make('end_date')
-                            ->label('Select End Date'),
+                            ->label('Select End Date')
+                            ->afterStateUpdated(function (callable $set, $get) {
+                                $set('endDate', $get('end_date'));                            
+                            }),
                     ])
                     ->columns(3),
             ]);
@@ -88,7 +103,7 @@ class Report extends Page
     public function getMembershipPlan()
     {
         $response = [];
-
+        logger("---->:".$this->branchLocation);
         $allData = MembershipPlan::all();
 
         foreach ($allData as $data) {
@@ -172,24 +187,24 @@ class Report extends Page
         $getAllPaymentByGcash = Payment::where('payment_method', 'Gcash')->get();
         $getAllPaymentByPaymaya = Payment::where('payment_method', 'Paymaya')->get();
 
-        $getTotalAmountCashByMembership = 
-        $getTotalAmountBankByMembership = 
-        $getTotalAmountCreditCardByMembership = 
-        $getTotalAmountDebitCardByMembership = 
-        $getTotalAmountGcashByMembership = 
-        $getTotalAmountPaymayaByMembership =
-        $getTotalAmountCashByAccess = 
-        $getTotalAmountBankByAccess = 
-        $getTotalAmountCreditCardByAccess = 
-        $getTotalAmountDebitCardByAccess = 
-        $getTotalAmountGcashByAccess = 
-        $getTotalAmountPaymayaByAccess = 
-        $getTotalAmountCashByPT = 
-        $getTotalAmountBankByPT = 
-        $getTotalAmountCreditCardByPT = 
-        $getTotalAmountDebitCardByPT = 
-        $getTotalAmountGcashByPT = 
-        $getTotalAmountPaymayaByPT = 0; // Initialize total amounts
+        $getTotalAmountCashByMembership =
+            $getTotalAmountBankByMembership =
+            $getTotalAmountCreditCardByMembership =
+            $getTotalAmountDebitCardByMembership =
+            $getTotalAmountGcashByMembership =
+            $getTotalAmountPaymayaByMembership =
+            $getTotalAmountCashByAccess =
+            $getTotalAmountBankByAccess =
+            $getTotalAmountCreditCardByAccess =
+            $getTotalAmountDebitCardByAccess =
+            $getTotalAmountGcashByAccess =
+            $getTotalAmountPaymayaByAccess =
+            $getTotalAmountCashByPT =
+            $getTotalAmountBankByPT =
+            $getTotalAmountCreditCardByPT =
+            $getTotalAmountDebitCardByPT =
+            $getTotalAmountGcashByPT =
+            $getTotalAmountPaymayaByPT = 0; // Initialize total amounts
 
 
         foreach ($getAllPaymentByCash as $row) {
@@ -199,9 +214,10 @@ class Report extends Page
             $accessAmountPerRow = $row->gym_access_price - ($row->gym_access_price * $row->gym_access_discount / 100);
             $getTotalAmountCashByAccess += $accessAmountPerRow;
 
-            $ptAmountPerRow = $row->pt_session_price ;
+            $ptAmountPerRow = $row->pt_session_price;
             $getTotalAmountCashByPT += $ptAmountPerRow;
-        };
+        }
+        ;
 
         foreach ($getAllPaymentByBankTransfer as $row) {
             $membershipAmountPerRow = $row->gym_membership_price - ($row->gym_membership_price * $row->gym_membership_discount / 100);
@@ -210,9 +226,10 @@ class Report extends Page
             $accessAmountPerRow = $row->gym_access_price - ($row->gym_access_price * $row->gym_access_discount / 100);
             $getTotalAmountBankByAccess += $accessAmountPerRow;
 
-            $ptAmountPerRow = $row->pt_session_price ;
+            $ptAmountPerRow = $row->pt_session_price;
             $getTotalAmountBankByPT += $ptAmountPerRow;
-        };
+        }
+        ;
 
         foreach ($getAllPaymentByCreditCard as $row) {
             $membershipAmountPerRow = $row->gym_membership_price - ($row->gym_membership_price * $row->gym_membership_discount / 100);
@@ -221,9 +238,10 @@ class Report extends Page
             $accessAmountPerRow = $row->gym_access_price - ($row->gym_access_price * $row->gym_access_discount / 100);
             $getTotalAmountCreditCardByAccess += $accessAmountPerRow;
 
-            $ptAmountPerRow = $row->pt_session_price ;
+            $ptAmountPerRow = $row->pt_session_price;
             $getTotalAmountCreditCardByPT += $ptAmountPerRow;
-        };
+        }
+        ;
 
         foreach ($getAllPaymentByDebitCard as $row) {
             $membershipAmountPerRow = $row->gym_membership_price - ($row->gym_membership_price * $row->gym_membership_discount / 100);
@@ -232,9 +250,10 @@ class Report extends Page
             $accessAmountPerRow = $row->gym_access_price - ($row->gym_access_price * $row->gym_access_discount / 100);
             $getTotalAmountDebitCardByAccess += $accessAmountPerRow;
 
-            $ptAmountPerRow = $row->pt_session_price ;
+            $ptAmountPerRow = $row->pt_session_price;
             $getTotalAmountDebitCardByPT += $ptAmountPerRow;
-        };
+        }
+        ;
 
         foreach ($getAllPaymentByGcash as $row) {
             $membershipAmountPerRow = $row->gym_membership_price - ($row->gym_membership_price * $row->gym_membership_discount / 100);
@@ -243,9 +262,10 @@ class Report extends Page
             $accessAmountPerRow = $row->gym_access_price - ($row->gym_access_price * $row->gym_access_discount / 100);
             $getTotalAmountGcashByAccess += $accessAmountPerRow;
 
-            $ptAmountPerRow = $row->pt_session_price ;
+            $ptAmountPerRow = $row->pt_session_price;
             $getTotalAmountGcashByPT += $ptAmountPerRow;
-        };
+        }
+        ;
 
         foreach ($getAllPaymentByPaymaya as $row) {
             $membershipAmountPerRow = $row->gym_membership_price - ($row->gym_membership_price * $row->gym_membership_discount / 100);
@@ -254,20 +274,21 @@ class Report extends Page
             $accessAmountPerRow = $row->gym_access_price - ($row->gym_access_price * $row->gym_access_discount / 100);
             $getTotalAmountPaymayaByAccess += $accessAmountPerRow;
 
-            $ptAmountPerRow = $row->pt_session_price ;
+            $ptAmountPerRow = $row->pt_session_price;
             $getTotalAmountPaymayaByPT += $ptAmountPerRow;
-        };
+        }
+        ;
 
         $getTotalMembership = $getTotalAmountCashByMembership + $getTotalAmountBankByMembership + $getTotalAmountCreditCardByMembership + $getTotalAmountDebitCardByMembership + $getTotalAmountGcashByMembership + $getTotalAmountPaymayaByMembership;
         $getTotalAccess = $getTotalAmountCashByAccess + $getTotalAmountBankByAccess + $getTotalAmountCreditCardByAccess + $getTotalAmountDebitCardByAccess + $getTotalAmountGcashByAccess + $getTotalAmountPaymayaByAccess;
         $getTotalPT = $getTotalAmountCashByPT + $getTotalAmountBankByPT + $getTotalAmountCreditCardByPT + $getTotalAmountDebitCardByPT + $getTotalAmountGcashByPT + $getTotalAmountPaymayaByPT;
         $getTotalCash = $getTotalAmountCashByMembership + $getTotalAmountCashByAccess + $getTotalAmountCashByPT;
-$getTotalBank = $getTotalAmountBankByMembership + $getTotalAmountBankByAccess + $getTotalAmountBankByPT;
-$getTotalCredit = $getTotalAmountCreditCardByMembership + $getTotalAmountCreditCardByAccess + $getTotalAmountCreditCardByPT;
-$getTotalDebit = $getTotalAmountDebitCardByMembership + $getTotalAmountDebitCardByAccess + $getTotalAmountDebitCardByPT;
-$getTotalGcash = $getTotalAmountGcashByMembership + $getTotalAmountGcashByAccess + $getTotalAmountGcashByPT;
-$getTotalPaymaya = $getTotalAmountPaymayaByMembership + $getTotalAmountPaymayaByAccess + $getTotalAmountPaymayaByPT;
-$getTotalAmount = $getTotalMembership + $getTotalAccess + $getTotalPT;
+        $getTotalBank = $getTotalAmountBankByMembership + $getTotalAmountBankByAccess + $getTotalAmountBankByPT;
+        $getTotalCredit = $getTotalAmountCreditCardByMembership + $getTotalAmountCreditCardByAccess + $getTotalAmountCreditCardByPT;
+        $getTotalDebit = $getTotalAmountDebitCardByMembership + $getTotalAmountDebitCardByAccess + $getTotalAmountDebitCardByPT;
+        $getTotalGcash = $getTotalAmountGcashByMembership + $getTotalAmountGcashByAccess + $getTotalAmountGcashByPT;
+        $getTotalPaymaya = $getTotalAmountPaymayaByMembership + $getTotalAmountPaymayaByAccess + $getTotalAmountPaymayaByPT;
+        $getTotalAmount = $getTotalMembership + $getTotalAccess + $getTotalPT;
 
         $response[] = [
             'category' => "Gym membership",
