@@ -1,10 +1,10 @@
-# fly.toml app configuration file generated for fleetwise-app-web on 2024-05-31T07:44:10+08:00
+# fly.toml app configuration file generated for xtremegym on 2024-07-02T14:48:48+08:00
 #
 # See https://fly.io/docs/reference/configuration/ for information about how to use this file.
 #
 
-app = 'xtremegym-web'
-primary_region = 'nrt'
+app = 'xtremegym'
+primary_region = 'sin'
 console_command = 'php /var/www/html/artisan tinker'
 
 [build]
@@ -13,20 +13,22 @@ console_command = 'php /var/www/html/artisan tinker'
     PHP_VERSION = '8.2'
 
 [env]
+  APP_DEBUG = 'false'
   APP_ENV = 'production'
+  BUGSNAG_API_KEY = '18879f1b09b44ef150afb0ed4d7fecd4'
+
+  DB_CONNECTION = 'pgsql'
+  DB_DATABASE = 'neondb'
+  DB_HOST = 'ep-fancy-thunder-a51rqsqv.us-east-2.aws.neon.tech'
+  DB_PASSWORD = 'ImFMK2CBEe1R'
+  DB_PORT = '5432'
+  DB_USERNAME = 'neondb_owner'
+
   LOG_CHANNEL = 'stderr'
   LOG_LEVEL = 'info'
   LOG_STDERR_FORMATTER = 'Monolog\Formatter\JsonFormatter'
   SESSION_DRIVER = 'cookie'
   SESSION_SECURE_COOKIE = 'true'
-
-  DB_CONNECTION = 'mysql'
-  DB_HOST = 'srv535.hstgr.io'
-  DB_PORT = '3306'
-  DB_DATABASE = 'u293291581_fleetwise'
-  DB_USERNAME = 'u293291581_fleetwise'
-  DB_PASSWORD = 'goFleetwise123!'
-
 
 [http_service]
   internal_port = 8080
