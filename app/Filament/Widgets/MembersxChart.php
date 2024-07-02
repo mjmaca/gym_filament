@@ -17,8 +17,8 @@ class MembersxChart extends ChartWidget
     protected function getData(): array
     {
         $branchLocation = $this->filters['branch_location'];
-        $startDate = Carbon::now()->startOfYear();
-        $endDate = Carbon::now()->endOfYear();
+        $startDate = $this->filters['start_date'] ?? Carbon::today();
+        $endDate = $this->filters['end_date'] ?? Carbon::today();
 
         // Initialize the query builder
         $queryMember = Member::query();
