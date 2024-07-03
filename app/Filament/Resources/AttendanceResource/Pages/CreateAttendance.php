@@ -16,12 +16,6 @@ class CreateAttendance extends CreateRecord
     {
         $selectedMember = $this->data['selectedMember'];
 
-            //     $attendance->membership_id = $get('selectedMember.membership_id');
-            //     $attendance->member_id = $get('selectedMember.id');
-            //     $attendance->branch_location = $get('selectedMember.branch_location');
-            //     $attendance->fullname = $get('selectedMember.fullname');
-            //     $attendance->is_guest = $get('selectedMember.is_guest');
-
         $this->data['membership_id'] = $selectedMember->membership_id;
         $this->data['full_name'] = $selectedMember->full_name;
         $this->data['branch_location'] = $selectedMember->branch_location;
