@@ -66,6 +66,11 @@ class AttendanceResource extends Resource
     {
         return $table
             ->columns([
+                Tables\Columns\TextColumn::make('created_at')
+                    ->label('Logged In')
+                    ->sortable()
+                    ->searchable(),
+
                 Tables\Columns\TextColumn::make('full_name')
                     ->label('Full Name')
                     ->sortable()
