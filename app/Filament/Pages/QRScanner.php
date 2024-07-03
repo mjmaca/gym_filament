@@ -30,8 +30,8 @@ class QRScanner extends Page
                 Forms\Components\TextInput::make('membership_id')
                     ->label("Membership ID")
                     ->live(onBlur: true)
-                    ->debounce(2000) // Debounce of 3 seconds
-
+                    ->debounce(1000) // Debounce of 3 seconds
+                    ->autofocus()
                     ->afterStateUpdated(function ($state) {
                         $this->filterMembers($state);
                     }), // Pass a closure here
@@ -41,7 +41,6 @@ class QRScanner extends Page
     public function filterMembers($value)
     {
         // Add your filtering logic here
-        $this->members = Member::where('membership_id', $value)->get();
-        logger("---". $this->members);
+        $this->members = Member::where('membership_id', $value)->first();
     }
 }
