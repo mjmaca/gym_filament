@@ -6,8 +6,14 @@
     </form>
 
     <div>
-        @livewire(\App\Filament\Widgets\MemberOverview::class, ['filters' => $this->filters])
-        @livewire(\App\Filament\Widgets\SalesOverview::class, ['filters' => $this->filters])
+        <div class="mt-8">
+            @livewire(\App\Filament\Widgets\MemberOverview::class, ['filters' => $this->filters])
+        </div>
+
+        <div class="mt-8">
+            @livewire(\App\Filament\Widgets\SalesOverview::class, ['filters' => $this->filters])
+        </div>
+
     </div>
 
     <div style="display: flex; gap: 1rem;">

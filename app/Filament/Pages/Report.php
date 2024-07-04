@@ -71,8 +71,8 @@ class Report extends Page
     public function mount()
     {
         $this->branchLocation = Branch::first()->name;
-        $this->startDate = Carbon::now();
-        $this->endDate = Carbon::today();
+        $this->startDate = Carbon::now()->format('Y-m-d');
+        $this->endDate = Carbon::today()->format('Y-m-d');
     }
 
 
@@ -85,6 +85,7 @@ class Report extends Page
                         Select::make('branch_location')
                             ->label("Select Branch Location")
                             ->options(Branch::all()->pluck('name', 'name'))
+                            ->live()
                             ->default(Branch::first()->name)
                             ->afterStateUpdated(function (callable $set, $state) {
                                 $this->branchLocation = $state;
@@ -92,14 +93,15 @@ class Report extends Page
                         DatePicker::make('start_date')
                             ->label('Select Start Date')
                             ->default(Carbon::now())
-                            ->afterStateUpdated(function (callable $set, $get) {
-                                $set('startDate', $get('start_date'));
+                            ->afterStateUpdated(function (callable $set, $state) {
+                                $this->startDate = $state;
+
                             }),
                         DatePicker::make('end_date')
                             ->label('Select End Date')
                             ->default(Carbon::now())
-                            ->afterStateUpdated(function (callable $set, $get) {
-                                $set('endDate', $get('end_date'));
+                            ->afterStateUpdated(function (callable $set, $state) {
+                                $this->endDate = $state;
                             }),
                     ])
                     ->columns(3),
@@ -346,5 +348,20 @@ class Report extends Page
         ];
 
         return $response;
+    }
+
+    public function downloadReport()
+    {
+        $data = [
+            'Gym Membership' => $this->getMembershipPlan(),
+            'Gym Access' => $this->getAccessPlan(),
+            'Coaching' => $this->getCoachingPlan(),
+            'Summary' => $this->getSummary(),
+        ];
+
+        return redirect()->route('download.report', [
+            'branch' => $this->branchLocation,
+            'data' => json_encode($data)
+        ]);
     }
 }

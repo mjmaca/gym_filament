@@ -11,7 +11,7 @@ use Filament\Forms\Form;
 
 class QRScanner extends Page
 {
-    protected static ?string $navigationIcon = 'heroicon-o-document-text';
+    protected static ?string $navigationIcon = 'heroicon-o-qr-code';
 
     protected static string $view = 'filament.pages.q-r-scanner';
 
