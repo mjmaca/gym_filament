@@ -127,7 +127,7 @@ class MemberResource extends Resource
                 Tables\Columns\TextColumn::make('mobile_number')
                     ->label('Mobile Number'),
                 Tables\Columns\BooleanColumn::make('is_guest')
-                    ->label('Is Guest')
+                    ->label('Is Member')
                     ->sortable()
                     ->searchable(),
 

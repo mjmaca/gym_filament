@@ -95,7 +95,7 @@ class QRScanner extends Page implements Tables\Contracts\HasTable
                 ->searchable(),
 
             Tables\Columns\BooleanColumn::make('is_guest')
-                ->label('Is Guest')
+                ->label('Is Member')
                 ->sortable()
                 ->searchable(),
         ];
