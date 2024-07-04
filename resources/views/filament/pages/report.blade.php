@@ -20,18 +20,17 @@
         <div class="flex space-x-4 mb-4 mt-8 justify-between">
             <div>
                 @foreach ($tabList as $tab)
-                <button wire:click="activateButton('{{ $tab }}')"
-                    class="{{ $activeTab === $tab ? 'bg-red-500' : 'bg-blue-500' }} hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">{{ ucfirst($tab) }}</button>
-            @endforeach
-
+                    <button wire:click="activateButton('{{ $tab }}')"
+                        class="{{ $activeTab === $tab ? 'bg-red-500' : 'bg-blue-500' }} hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">{{ ucfirst($tab) }}</button>
+                @endforeach
             </div>
-           
+
             <div>
-                <button wire:click="downloadReport" class="bg-red-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
+                <button wire:click="downloadReport"
+                    class="bg-red-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
                     Download Report
                 </button>
             </div>
-
         </div>
 
         <table class="min-w-full">
@@ -121,6 +120,6 @@
                     @endforeach
                 </tbody>
             @endif
-        </table>  
+        </table>
     </div>
 </x-filament::page>

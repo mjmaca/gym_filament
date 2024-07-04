@@ -183,7 +183,6 @@ class PaymentResource extends Resource
                         Forms\Components\Select::make('gym_access_plan')
                             ->options(GymAccessPlan::all()->pluck('description', 'description'))
                             ->label("Gym Access Plan")
-                            ->required()
                             ->live()
                             ->afterStateUpdated(function (callable $set, $state, $get) {
                                 $price = GymAccessPlan::where('description', $state)->value('price');
@@ -202,7 +201,6 @@ class PaymentResource extends Resource
                             ->prefix("PHP")
                             ->disabled(),
                         Forms\Components\Select::make('gym_access_discount')
-                            ->required()
                             ->live()
                             ->label("Discount")
                             ->options([
@@ -229,7 +227,6 @@ class PaymentResource extends Resource
                                 $set('amount', $totalAmount);
                             }),
                         Forms\Components\Select::make('gym_access_extension')
-                            ->required()
                             ->label("Membership Extension")
                             ->options([
                                 '0' => 'No Extension',
@@ -245,10 +242,8 @@ class PaymentResource extends Resource
                             }),
                         Forms\Components\DatePicker::make('gym_access_start_date')
                             ->label("Gym Access Start Date")
-                            ->required()
                             ->default(now()->format('Y-m-d')),
                         Forms\Components\DatePicker::make('gym_access_expiration_date')
-                            ->required()
                             ->format('Y-m-d')
                             ->label("Gym Access Expiration Date"),
                     ]),
@@ -364,8 +359,8 @@ class PaymentResource extends Resource
                     ->columns(2)
                     ->schema([
                         Forms\Components\Select::make('payment_method')
-                            ->required()
                             ->label("Payment Method")
+                            ->required()
                             ->options([
                                 'Bank Transfer' => 'Bank Transfer',
                                 'Cash' => 'Cash',
