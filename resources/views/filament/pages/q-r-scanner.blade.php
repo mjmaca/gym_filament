@@ -24,4 +24,10 @@
         </x-filament::card>
     @endif
 
+    
+    <div class="mt-6">
+        {{ $this->table }}
+    </div>
+    
+
 </x-filament-panels::page>
