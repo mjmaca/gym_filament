@@ -1,29 +1,31 @@
 <?php
 
-namespace App\Filament\Resources;
+namespace App\Filament\Pages;
 
-use App\Filament\Resources\AttendanceResource\Pages;
-use App\Models\Attendance;
 use App\Models\Member;
+use App\Models\Attendance;
+
+use Filament\Pages\Page;
 use Filament\Forms;
 use Filament\Forms\Form;
-use Filament\Resources\Resource;
-use Filament\Tables;
-use Filament\Tables\Table;
 use Filament\Forms\Components\Section;
+use Filament\Forms\Contracts\HasForms;
+use Filament\Forms\Concerns\InteractsWithForms;
 
-
-class AttendanceResource extends Resource
+class CreateAttendance extends Page implements HasForms
 {
-    protected static ?string $model = Attendance::class;
+    use InteractsWithForms;
 
-    protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
+    protected static ?string $navigationIcon = 'heroicon-o-document-text';
 
-    protected static ?string $navigationLabel  = "Daily Attendances";
+    protected static string $view = 'filament.pages.create-attendance';
+    protected ?string $heading = 'Create Attendance';
+
+    protected static bool $shouldRegisterNavigation = false;
     public $selectedMember;
+    public $membership_id;
 
-
-    public static function form(Form $form): Form
+    public function form(Form $form): Form
     {
         return $form
             ->schema([
@@ -33,8 +35,8 @@ class AttendanceResource extends Resource
                             ->options(Member::all()->pluck('full_name', 'id'))
                             ->label("Membership Name")
                             ->searchable()
-                            ->required()
                             ->live()
+                            ->required()
                             ->afterStateUpdated(function (callable $set, $state) {
                                 $member = Member::where('id', $state)->firstOrFail();
                                 $set('selectedMember', $member);
@@ -59,57 +61,25 @@ class AttendanceResource extends Resource
                             ]),
                     ]),
             ]);
-
     }
 
-    public static function table(Table $table): Table
+    public function submit()
     {
-        return $table
-            ->columns([
-                Tables\Columns\TextColumn::make('created_at')
-                    ->label('Logged In')
-                    ->sortable()
-                    ->searchable(),
+        $validatedData = $this->validate();
 
-                Tables\Columns\TextColumn::make('full_name')
-                    ->label('Full Name')
-                    ->sortable()
-                    ->searchable(),
-                Tables\Columns\TextColumn::make('branch_location')
-                    ->label('Branch Location')
-                    ->sortable()
-                    ->searchable(),
-                Tables\Columns\BooleanColumn::make('is_guest')
-                    ->label('Is Guest')
-                    ->sortable()
-                    ->searchable(),
-            ])
-            ->filters([
-                //
-            ])
-            ->actions([
-            ])
-            ->bulkActions([
-                Tables\Actions\BulkActionGroup::make([
-                    Tables\Actions\DeleteBulkAction::make(),
-                ]),
-            ]);
+        $validatedData['membership_id'] = $this->selectedMember->membership_id;
+        $validatedData['full_name'] = $this->selectedMember->full_name;
+        $validatedData['branch_location'] = $this->selectedMember->branch_location;
+        $validatedData['is_guest'] = $this->selectedMember->is_guest;
+
+        try {
+            Attendance::create($validatedData);
+            // Reset the form after successful creation
+            $this->reset('selectedMember', 'membership_id');
+        } catch (\Exception $e) {
+            logger('Error creating attendance record:', ['error' => $e->getMessage()]);
+        }
     }
 
 
-    public static function getRelations(): array
-    {
-        return [
-            //
-        ];
-    }
-
-    public static function getPages(): array
-    {
-        return [
-            'index' => Pages\ListAttendances::route('/'),
-            'create' => Pages\CreateAttendance::route('/create'),
-            // 'edit' => Pages\EditAttendance::route('/{record}/edit'),
-        ];
-    }
 }

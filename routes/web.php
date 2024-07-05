@@ -2,6 +2,8 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\ReportController;
+use App\Filament\Pages\CreateAttendance; // Make sure you're importing the correct class
+use App\Filament\Pages\QRScanner; // Make sure you're importing the correct class
 
 /*
 |--------------------------------------------------------------------------
@@ -18,4 +20,10 @@ Route::get('/', function () {
     return view('welcome');
 });
 
-Route::get('/download-report', [ReportController::class, 'download'])->name('download.report');
+
+Route::middleware('auth:sanctum')->group(function () {
+    Route::get('/download-report', [ReportController::class, 'download'])->name('download.report');
+    Route::get('/create-attendance', CreateAttendance::class)->name('filament.pages.create-attendance'); 
+    Route::get('/q-r-scanner', QRScanner::class)->name('filament.pages.q-r-scanner');
+});
+
