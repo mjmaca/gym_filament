@@ -47,7 +47,6 @@ class QRScanner extends Page implements Tables\Contracts\HasTable
                     ->afterStateUpdated(function ($state) {
                         $this->filterMembers($state);
                         $this->resetForm();
-
                     }), // Pass a closure here
             ]);
     }
@@ -58,6 +57,14 @@ class QRScanner extends Page implements Tables\Contracts\HasTable
         $this->members = Member::where('membership_id', $value)->first();
     }
 
+    public function checkIfAccessExpire() {
+        return $this->members->gym_access_expiration_date >= now()->format('Y-m-d');
+    }
+
+    public function checkIfMembershipExpire() {
+        return $this->members->gym_membership_expiration_date >= now()->format('Y-m-d');
+    }
+
     public function resetForm()
     {
         // Reset the form state
@@ -66,8 +73,7 @@ class QRScanner extends Page implements Tables\Contracts\HasTable
 
     public function savedAttendance($data)
     {
-        $newAttendance = new Attendance();
-
+        $newAttendance =  new Attendance();
         $newAttendance['membership_id'] = $data->membership_id;
         $newAttendance['full_name'] = $data->full_name;
         $newAttendance['branch_location'] = $data->branch_location;
