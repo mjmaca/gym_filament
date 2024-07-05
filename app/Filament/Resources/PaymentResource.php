@@ -227,7 +227,7 @@ class PaymentResource extends Resource
                                 $set('amount', $totalAmount);
                             }),
                         Forms\Components\Select::make('gym_access_extension')
-                            ->label("Membership Extension")
+                            ->label("Gym Access Extension")
                             ->options([
                                 '0' => 'No Extension',
                                 '1' => '1 Month Extension',

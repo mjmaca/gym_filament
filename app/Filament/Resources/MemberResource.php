@@ -100,7 +100,7 @@ class MemberResource extends Resource
                             ->label("Birth Date"),
                         Forms\Components\TextInput::make('emergency_name')
                             ->required()
-                            ->label("Emergency Name"),
+                            ->label("Emergency Contact Name"),
                         Forms\Components\TextInput::make('emergency_contact')
                             ->tel()
                             ->prefix('+63')
