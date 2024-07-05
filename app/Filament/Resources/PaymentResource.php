@@ -42,27 +42,32 @@ class PaymentResource extends Resource
                                 $member = Member::where('id', $state)->first();
                                 $set('selectedMember', $member);
 
-                                // if ($member) {
-                                //set the gym membership plan if exist in member profile
-                                // $set('gym_membership_type', $member->gym_membership_type);
-                                // $set('gym_membership_price', $member->gym_membership_price);
-                                // $set('gym_membership_discount', $member->gym_membership_discount);
-                                // $set('gym_membership_extension', $member->gym_membership_extension);
-                                // $set('gym_membership_start_date', $member->gym_membership_start_date ? Carbon::parse($member->gym_membership_start_date)->format('Y-m-d') : null);
-                    
-                                //set the gym access plan if exist in member profile
-                                // $set('gym_access_plan', $member->gym_access_plan);
-                                // $set('gym_access_price', $member->gym_access_price);
-                                // $set('gym_access_discount', $member->gym_access_discount);
-                                // $set('gym_access_extension', $member->gym_access_extension);
-                    
-                                //set the training type plan if exist in member profile
-                                // $set('pt_session_coach_name', $member->pt_session_coach_name);
-                                // $set('pt_session_type', $member->pt_session_type);
-                                // $set('pt_session_total', $member->pt_session_total);
-                                // $set('pt_session_price', $member->pt_session_price);
-                                // $set('pt_session_extension', $member->pt_session_extension);
-                                // }
+                                //if there is no member set this price to default 0
+                                if (empty($member)) {
+                                    $set('gym_membership_type', null);
+                                    $set('gym_membership_price', 0);
+                                    $set('gym_membership_discount', '0');
+                                    $set('gym_membership_extension', '0');
+                                    $set('gym_membership_start_date', now()->format('Y-m-d'));
+                                    $set('gym_membership_expiration_date', null);
+
+                                    $set('gym_access_plan', null);
+                                    $set('gym_access_price', 0);
+                                    $set('gym_access_discount', '0');
+                                    $set('gym_access_extension', '0');
+                                    $set('gym_access_start_date', now()->format('Y-m-d'));
+                                    $set('gym_access_expiration_date', null);
+
+                                    $set('pt_session_coach_name', null);
+                                    $set('pt_session_type', null);
+                                    $set('pt_session_total', null);
+
+                                    $set('pt_session_price', 0);
+                                    $set('pt_session_extension', '0');
+                                    $set('pt_session_start_date', now()->format('Y-m-d'));
+                                    $set('pt_session_expiration_date', null);
+                                }
+
                             }),
 
                         // // //Membership Details
@@ -111,7 +116,7 @@ class PaymentResource extends Resource
                     ->collapsible(true)
                     ->schema([
                         Forms\Components\Select::make('gym_membership_type')
-                            ->options(fn($get) => $get('selectedMember') ? MembershipPlan::where('branch_location', $get('selectedMember.branch_location'))->pluck('type', 'type') : null)
+                            ->options(fn($get) => MembershipPlan::where('branch_location', $get('selectedMember.branch_location'))->pluck('type', 'type'))
                             ->label("Gym Membership Type")
                             ->live()
                             ->reactive()
@@ -178,7 +183,6 @@ class PaymentResource extends Resource
                             ->default(now()->format('Y-m-d')),
                         Forms\Components\DatePicker::make('gym_membership_expiration_date')
                             ->label("Gym Membership Expiration Date")
-                            ->default(now()->addMonths(6)->format('Y-m-d')) //by defaut silver is 6 months,
                     ]),
 
                 Section::make('Gym Access')
@@ -186,12 +190,15 @@ class PaymentResource extends Resource
                     ->collapsible(true)
                     ->schema([
                         Forms\Components\Select::make('gym_access_plan')
-                            ->options(GymAccessPlan::all()->pluck('description', 'description'))
+                            ->options(fn($get) => GymAccessPlan::where('branch_location', $get('selectedMember.branch_location'))->pluck('description', 'description'))
                             ->label("Gym Access Plan")
                             ->live()
                             ->afterStateUpdated(function (callable $set, $state, $get) {
-                                $price = GymAccessPlan::where('description', $state)->value('price');
+                                $price = GymAccessPlan::where('description', $state)
+                                    ->where('branch_location', $get('selectedMember.branch_location'))
+                                    ->value('price');
                                 $set('gym_access_price', $price);
+
                                 //set the current total amount when the field change
                                 $totalAmount = self::calculateTotalAmount($get);
                                 $set('amount', $totalAmount);
@@ -202,7 +209,7 @@ class PaymentResource extends Resource
                             }),
                         Forms\Components\TextInput::make('gym_access_price')
                             ->label("Gym Access Price")
-                            ->default(fn($get): string => number_format(GymAccessPlan::where('description', $get('gym_access_plan'))->value('price') ?? '0', 2, '.', ','))
+                            ->default('0')
                             ->prefix("PHP")
                             ->disabled(),
                         Forms\Components\Select::make('gym_access_discount')
@@ -248,6 +255,7 @@ class PaymentResource extends Resource
                         Forms\Components\DatePicker::make('gym_access_start_date')
                             ->label("Gym Access Start Date")
                             ->default(now()->format('Y-m-d')),
+
                         Forms\Components\DatePicker::make('gym_access_expiration_date')
                             ->format('Y-m-d')
                             ->label("Gym Access Expiration Date"),
@@ -259,10 +267,10 @@ class PaymentResource extends Resource
                     ->schema([
                         Forms\Components\Select::make('pt_session_coach_name')
                             //filter the coaches in the branch where the member is enroll
-                            ->options(fn($get) => $get('selectedMember') ? Coach::where('branch_location', $get('selectedMember.branch_location'))->pluck('coach_name', 'coach_name') : null)
+                            ->options(fn($get) => Coach::where('branch_location', $get('selectedMember.branch_location'))->pluck('coach_name', 'coach_name'))
                             ->label('Coach Name'),
                         Forms\Components\Select::make('pt_session_type')
-                            ->options(TrainingType::all()->pluck('description', 'description'))
+                            ->options(fn($get) => TrainingType::where('branch_location', $get('selectedMember.branch_location'))->pluck('description', 'description'))
                             ->label('Session Type')
                             ->live()
                             ->afterStateUpdated(function (callable $set, $state, $get) {
@@ -273,8 +281,9 @@ class PaymentResource extends Resource
 
                         Forms\Components\Select::make('pt_session_total')
                             ->label('Number of Sessions')
-                            ->options(fn(Forms\Get $get) => TrainingType::where('description', $get('pt_session_type'))->pluck('session_number', 'session_number'))
-                            ->disabled(fn(Forms\Get $get): bool => !filled($get('pt_session_type')))
+                            ->options(fn(Forms\Get $get) => TrainingType::where('branch_location', $get('selectedMember.branch_location'))
+                                ->where('description', $get('pt_session_type'))
+                                ->pluck('session_number', 'session_number'))
                             ->live()
                             ->afterStateUpdated(function (callable $set, $state, $get) {
                                 $price = TrainingType::where('session_number', $state)->value('session_price');
@@ -289,6 +298,7 @@ class PaymentResource extends Resource
                             }),
                         Forms\Components\TextInput::make('pt_session_price')
                             ->label("Session Price")
+                            ->default(0)
                             ->prefix("PHP")
                             ->disabled(),
                         Forms\Components\Select::make('pt_session_extension')
@@ -308,7 +318,9 @@ class PaymentResource extends Resource
                             ->default(0)
                             ->disabled(true),
                         Forms\Components\DatePicker::make('pt_session_start_date')
-                            ->label('Start Date'),
+                            ->label('Start Date')
+                            ->default(now()->format('Y-m-d')),
+
                         Forms\Components\DatePicker::make('pt_session_expiration_date')
                             ->label('Expiration Date'),
 
