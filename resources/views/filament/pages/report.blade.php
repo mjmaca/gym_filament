@@ -110,12 +110,14 @@
                         <tr>
                             <td class="px-6 py-4 whitespace-nowrap">{{ $plan['category'] }}</td>
                             <td class="px-6 py-4 whitespace-nowrap">{{ $plan['total_amount'] }}</td>
-                            <td class="px-6 py-4 whitespace-nowrap">{{ $plan['cash'] }}</td>
                             <td class="px-6 py-4 whitespace-nowrap">{{ $plan['bank'] }}</td>
+                            <td class="px-6 py-4 whitespace-nowrap">{{ $plan['cash'] }}</td>
+                            <td class="px-6 py-4 whitespace-nowrap">{{ $plan['check'] }}</td>
                             <td class="px-6 py-4 whitespace-nowrap">{{ $plan['credit'] }}</td>
                             <td class="px-6 py-4 whitespace-nowrap">{{ $plan['debit'] }}</td>
                             <td class="px-6 py-4 whitespace-nowrap">{{ $plan['gcash'] }}</td>
                             <td class="px-6 py-4 whitespace-nowrap">{{ $plan['paymaya'] }}</td>
+
                         </tr>
                     @endforeach
                 </tbody>

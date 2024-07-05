@@ -364,6 +364,7 @@ class PaymentResource extends Resource
                             ->options([
                                 'Bank Transfer' => 'Bank Transfer',
                                 'Cash' => 'Cash',
+                                'Check' => 'Check',
                                 'Credit Card' => 'Credit Card',
                                 'Debit Card' => 'Debit Card',
                                 'Gcash' => 'GCash',
