@@ -49,6 +49,7 @@ class MemberResource extends Resource
                             ->options(Branch::all()->pluck('name', 'name'))
                             ->label("Branch Location")
                             ->live()
+                            ->required()
                             ->afterStateUpdated(function (callable $set, $state, $get) {
                                 $branchCode = Branch::where('name', $state)->value('code');
                                 $year = date('Y');

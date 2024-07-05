@@ -498,7 +498,6 @@ class PaymentResource extends Resource
         return $expirationDate;
     }
 
-
     public static function getRelations(): array
     {
         return [
