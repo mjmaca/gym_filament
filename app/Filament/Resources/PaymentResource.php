@@ -66,6 +66,9 @@ class PaymentResource extends Resource
                                     $set('pt_session_extension', '0');
                                     $set('pt_session_start_date', now()->format('Y-m-d'));
                                     $set('pt_session_expiration_date', null);
+
+                                    $set('amount', 0);
+
                                 }
 
                             }),
