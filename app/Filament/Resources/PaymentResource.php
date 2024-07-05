@@ -39,34 +39,35 @@ class PaymentResource extends Resource
                             ->required()
                             ->live()
                             ->afterStateUpdated(function (callable $set, $state) {
-                                $member = Member::where('id', $state)->firstOrFail();
+                                $member = Member::where('id', $state)->first();
                                 $set('selectedMember', $member);
 
-                                if ($member) {
-                                    //set the gym membership plan if exist in member profile
-                                    // $set('gym_membership_type', $member->gym_membership_type);
-                                    // $set('gym_membership_price', $member->gym_membership_price);
-                                    // $set('gym_membership_discount', $member->gym_membership_discount);
-                                    // $set('gym_membership_extension', $member->gym_membership_extension);
-                                    // $set('gym_membership_start_date', $member->gym_membership_start_date ? Carbon::parse($member->gym_membership_start_date)->format('Y-m-d') : null);
+                                // if ($member) {
+                                //set the gym membership plan if exist in member profile
+                                // $set('gym_membership_type', $member->gym_membership_type);
+                                // $set('gym_membership_price', $member->gym_membership_price);
+                                // $set('gym_membership_discount', $member->gym_membership_discount);
+                                // $set('gym_membership_extension', $member->gym_membership_extension);
+                                // $set('gym_membership_start_date', $member->gym_membership_start_date ? Carbon::parse($member->gym_membership_start_date)->format('Y-m-d') : null);
                     
-                                    //set the gym access plan if exist in member profile
-                                    // $set('gym_access_plan', $member->gym_access_plan);
-                                    // $set('gym_access_price', $member->gym_access_price);
-                                    // $set('gym_access_discount', $member->gym_access_discount);
-                                    // $set('gym_access_extension', $member->gym_access_extension);
+                                //set the gym access plan if exist in member profile
+                                // $set('gym_access_plan', $member->gym_access_plan);
+                                // $set('gym_access_price', $member->gym_access_price);
+                                // $set('gym_access_discount', $member->gym_access_discount);
+                                // $set('gym_access_extension', $member->gym_access_extension);
                     
-                                    //set the training type plan if exist in member profile
-                                    // $set('pt_session_coach_name', $member->pt_session_coach_name);
-                                    // $set('pt_session_type', $member->pt_session_type);
-                                    // $set('pt_session_total', $member->pt_session_total);
-                                    // $set('pt_session_price', $member->pt_session_price);
-                                    // $set('pt_session_extension', $member->pt_session_extension);
-                                }
+                                //set the training type plan if exist in member profile
+                                // $set('pt_session_coach_name', $member->pt_session_coach_name);
+                                // $set('pt_session_type', $member->pt_session_type);
+                                // $set('pt_session_total', $member->pt_session_total);
+                                // $set('pt_session_price', $member->pt_session_price);
+                                // $set('pt_session_extension', $member->pt_session_extension);
+                                // }
                             }),
 
                         // // //Membership Details
                         Section::make('Membership Details')
+                            ->collapsible(true)
                             ->columns(2)
                             ->hidden(fn($get) => !$get('selectedMember'))
                             ->schema([
@@ -107,14 +108,17 @@ class PaymentResource extends Resource
 
                 Section::make('Gym Membership')
                     ->columns(2)
+                    ->collapsible(true)
                     ->schema([
                         Forms\Components\Select::make('gym_membership_type')
-                            ->options(MembershipPlan::all()->pluck('type', 'type'))
+                            ->options(fn($get) => $get('selectedMember') ? MembershipPlan::where('branch_location', $get('selectedMember.branch_location'))->pluck('type', 'type') : null)
                             ->label("Gym Membership Type")
                             ->live()
-                            ->default(MembershipPlan::first()->type)
+                            ->reactive()
                             ->afterStateUpdated(function (callable $set, $state, $get) {
-                                $price = MembershipPlan::where('type', $state)->value('price');
+                                $price = MembershipPlan::where('type', $state)
+                                    ->where('branch_location', $get('selectedMember.branch_location'))
+                                    ->value('price');
                                 $set('gym_membership_price', $price);
                                 //set the current total amount when the field change
                                 $totalAmount = self::calculateTotalAmount($get);
@@ -125,8 +129,8 @@ class PaymentResource extends Resource
                                 $set('gym_membership_expiration_date', $membershipExpirationDate);
                             }),
                         Forms\Components\TextInput::make('gym_membership_price')
-                            ->default(fn($get): string => number_format(MembershipPlan::where('type', $get('gym_membership_type'))->value('price') ?? '0', 2, '.', ','))
                             ->label("Gym Membership Price")
+                            ->default('0')
                             ->prefix("PHP")
                             ->disabled(),
                         Forms\Components\Select::make('gym_membership_discount')
@@ -179,6 +183,7 @@ class PaymentResource extends Resource
 
                 Section::make('Gym Access')
                     ->columns(2)
+                    ->collapsible(true)
                     ->schema([
                         Forms\Components\Select::make('gym_access_plan')
                             ->options(GymAccessPlan::all()->pluck('description', 'description'))
@@ -250,6 +255,7 @@ class PaymentResource extends Resource
 
                 Section::make('Personal Training')
                     ->columns(2)
+                    ->collapsible(true)
                     ->schema([
                         Forms\Components\Select::make('pt_session_coach_name')
                             //filter the coaches in the branch where the member is enroll
@@ -264,7 +270,7 @@ class PaymentResource extends Resource
                                 $ptExpirationDate = self::calculateExpirationDateByPT($get);
                                 $set('pt_session_expiration_date', $ptExpirationDate);
                             }),
-                            
+
                         Forms\Components\Select::make('pt_session_total')
                             ->label('Number of Sessions')
                             ->options(fn(Forms\Get $get) => TrainingType::where('description', $get('pt_session_type'))->pluck('session_number', 'session_number'))
@@ -277,7 +283,7 @@ class PaymentResource extends Resource
                                 $totalAmount = self::calculateTotalAmount($get);
                                 $set('amount', $totalAmount);
 
-                                  //set the expidation date
+                                //set the expidation date
                                 $ptExpirationDate = self::calculateExpirationDateByPT($get);
                                 $set('pt_session_expiration_date', $ptExpirationDate);
                             }),
@@ -317,16 +323,16 @@ class PaymentResource extends Resource
                             ->label('Membership Plan')
                             ->content(fn($get) => $get('gym_membership_type') ?? 'N/A'),
                         Forms\Components\Placeholder::make('')
-                            ->content(fn($get) => 'PHP ' .    number_format($get('gym_membership_price'), 2, '.', ',')),
+                            ->content(fn($get) => 'PHP ' . number_format($get('gym_membership_price'), 2, '.', ',')),
                         Forms\Components\Placeholder::make('gym_membership_discount')
                             ->label('Discounted Amount')
                             ->content(fn($get) => $get('gym_membership_discount') . '%' ?? '0%'),
                         Forms\Components\Placeholder::make('')
-                        ->content(fn($get) => 'PHP ' . number_format(
-                            floatval(str_replace(',', '', $get('gym_membership_price'))) -
-                            (floatval(str_replace(',', '', $get('gym_membership_price'))) * floatval(str_replace(',', '', $get('gym_membership_discount'))) / 100),
-                            2
-                        ) ?? 'PHP 0.00'),
+                            ->content(fn($get) => 'PHP ' . number_format(
+                                floatval(str_replace(',', '', $get('gym_membership_price'))) -
+                                (floatval(str_replace(',', '', $get('gym_membership_price'))) * floatval(str_replace(',', '', $get('gym_membership_discount'))) / 100),
+                                2
+                            ) ?? 'PHP 0.00'),
                         //Gym Access Details 
                         Forms\Components\Placeholder::make('gym_access_plan')
                             ->label('Gym Access Plan')
@@ -348,12 +354,12 @@ class PaymentResource extends Resource
                             ->label('PT Session Program')
                             ->content(fn($get) => $get('pt_session_type') ?? 'N/A'),
                         Forms\Components\Placeholder::make('')
-                        ->content(fn($get) => 'PHP ' . number_format(floatval(str_replace(',', '', $get('pt_session_price'))), 2) ?? 'PHP 0.00'),
+                            ->content(fn($get) => 'PHP ' . number_format(floatval(str_replace(',', '', $get('pt_session_price'))), 2) ?? 'PHP 0.00'),
 
                         Forms\Components\Placeholder::make('')
                             ->label('Total Amount'),
                         Forms\Components\Placeholder::make('')
-                            ->content(fn($get) => 'PHP ' .    number_format(self::calculateTotalAmount($get), 2, '.', ',')),
+                            ->content(fn($get) => 'PHP ' . number_format(self::calculateTotalAmount($get), 2, '.', ',')),
                     ]),
                 Section::make('Payment')
                     ->columns(2)
@@ -448,13 +454,13 @@ class PaymentResource extends Resource
 
         if (empty($getMembershipDuration)) {
             $getMembershipDuration = 0;
-        } 
+        }
 
         if (empty($getMembershipExtension)) {
             $getMembershipExtension = 0;
-        } 
-        
-        $totalDurationDate = $getMembershipExtension + $getMembershipDuration; 
+        }
+
+        $totalDurationDate = $getMembershipExtension + $getMembershipDuration;
         $expirationDate = Carbon::parse($getMembershipStartDate)->addMonths($totalDurationDate)->format('Y-m-d');
         return $expirationDate;
     }
@@ -467,17 +473,17 @@ class PaymentResource extends Resource
 
         if (empty($getGymAccessDuration)) {
             $getGymAccessDuration = 0;
-        } 
+        }
 
         if (empty($getGymAccessExtension)) {
             $getGymAccessExtension = 0;
-        } 
+        }
 
         if ($getGymAccessDuration == 1) {
             $expirationDate = Carbon::parse($getGymAccessStartDate)->addDays($getGymAccessDuration)->format('Y-m-d');
         } else {
-            $convertDaystoMonth = $getGymAccessDuration/30;
-            $totalDurationDate = $getGymAccessExtension + $convertDaystoMonth; 
+            $convertDaystoMonth = $getGymAccessDuration / 30;
+            $totalDurationDate = $getGymAccessExtension + $convertDaystoMonth;
             $expirationDate = Carbon::parse($getGymAccessStartDate)->addMonths($totalDurationDate)->format('Y-m-d');
         }
         return $expirationDate;
@@ -486,13 +492,13 @@ class PaymentResource extends Resource
     public static function calculateExpirationDateByPT($get)
     {
         $getPTDuration = TrainingType::where('description', $get('pt_session_type'))
-        ->where('session_number', $get('pt_session_total'))
-        ->value('session_duration');
+            ->where('session_number', $get('pt_session_total'))
+            ->value('session_duration');
         $getPTStartDate = $get('pt_session_start_date');
 
         if (empty($getPTDuration)) {
             $getPTDuration = 0;
-        } 
+        }
 
         $expirationDate = Carbon::parse($getPTStartDate)->addDays($getPTDuration)->format('Y-m-d');
         return $expirationDate;

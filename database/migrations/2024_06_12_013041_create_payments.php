@@ -25,12 +25,12 @@ return new class extends Migration {
             $table->integer('gym_membership_extension')->nullable();
 
             // Gym Access
-            $table->integer('gym_access_discount');
-            $table->date('gym_access_expiration_date');
-            $table->date('gym_access_start_date');
-            $table->float('gym_access_price', 8, 2);
-            $table->string('gym_access_plan');
-            $table->integer('gym_access_extension');
+            $table->integer('gym_access_discount')->nullable();;
+            $table->date('gym_access_expiration_date')->nullable();;
+            $table->date('gym_access_start_date')->nullable();;
+            $table->float('gym_access_price', 8, 2)->nullable();;
+            $table->string('gym_access_plan')->nullable();;
+            $table->integer('gym_access_extension')->nullable();;
 
             // PT Session
             $table->string('pt_session_coach_name')->nullable();

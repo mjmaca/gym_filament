@@ -15,6 +15,7 @@ return new class extends Migration
             $table->id();
             $table->string('type');
             $table->integer('price');
+            $table->string('branch_location');
             $table->integer('duration'); //months
             $table->timestamps();
         });

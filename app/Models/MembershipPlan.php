@@ -9,14 +9,15 @@ class MembershipPlan extends Model
 {
     use HasFactory;
 
-protected $fillable = [
-    'type',
-    'price',
-    'duration',
-];
+    protected $fillable = [
+        'type',
+        'price',
+        'branch_location',
+        'duration',
+    ];
 
-protected $casts = [
-    'price' => 'integer',
-    'duration' => 'integer',
-];
+    protected $casts = [
+        'price' => 'integer',
+        'duration' => 'integer',
+    ];
 }

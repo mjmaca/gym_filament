@@ -121,6 +121,11 @@ class MemberResource extends Resource
             ->columns([
                 Tables\Columns\TextColumn::make('membership_id')
                     ->label('Membership Id'),
+
+                    Tables\Columns\TextColumn::make('branch_location')
+                    ->label('Branch Location')
+                    ->sortable()
+                    ->searchable(),
                 Tables\Columns\TextColumn::make('full_name')
                     ->label('Full Name')
                     ->sortable()

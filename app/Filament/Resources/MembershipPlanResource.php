@@ -5,6 +5,8 @@ namespace App\Filament\Resources;
 use App\Filament\Resources\MembershipPlanResource\Pages;
 use App\Filament\Resources\MembershipPlanResource\RelationManagers;
 use App\Models\MembershipPlan;
+use App\Models\Branch;
+
 use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
@@ -23,7 +25,13 @@ class MembershipPlanResource extends Resource
     public static function form(Form $form): Form
     {
         return $form
+            ->columns(2)
             ->schema([
+                Forms\Components\Select::make('branch_location')
+                    ->options(Branch::all()->pluck('name', 'name'))
+                    ->label("Branch Location")
+                    ->live()
+                    ->required(),
                 Forms\Components\TextInput::make('type')
                     ->required()
                     ->label('Type'),
@@ -43,6 +51,7 @@ class MembershipPlanResource extends Resource
     public static function table(Table $table): Table
     {
         return $table
+            ->defaultGroup('branch_location')
             ->columns([
                 Tables\Columns\TextColumn::make('type')
                     ->label('Description')

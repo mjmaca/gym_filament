@@ -14,11 +14,36 @@ class MembershipPlanTableSeeder extends Seeder
     public function run(): void
     {
         $branches = [
-            ['type' => 'Silver Membership', 'price' => '499', 'duration' => '6'],
-            ['type' => 'Gold Membership', 'price' => '799', 'duration' => '12'],
-            ['type' => 'VIP Silver Membership', 'price' => '0', 'duration' => '12'],
-            ['type' => 'VIP White Membership', 'price' => '0', 'duration' => '12'],
-            ['type' => 'VIP Black Membership', 'price' => '0', 'duration' => '12'],
+            [
+                'type' => 'Silver Membership',
+                'price' => '499',
+                'branch_location' => 'XGW - Francisco Homes SJDM',
+                'duration' => '6'
+            ],
+            [
+                'type' => 'Gold Membership',
+                'price' => '799',
+                'branch_location' => 'XGW - Francisco Homes SJDM',
+                'duration' => '12'
+            ],
+            [
+                'type' => 'VIP Silver Membership',
+                'price' => '0',
+                'branch_location' => 'XGW - Francisco Homes SJDM',
+                'duration' => '12'
+            ],
+            [
+                'type' => 'VIP White Membership',
+                'price' => '0',
+                'branch_location' => 'XGW - Francisco Homes SJDM',
+                'duration' => '12'
+            ],
+            [
+                'type' => 'VIP Black Membership',
+                'price' => '0',
+                'branch_location' => 'XGW - Francisco Homes SJDM',
+                'duration' => '12'
+            ],
         ];
 
         foreach ($branches as $branch) {
