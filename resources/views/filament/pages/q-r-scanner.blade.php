@@ -4,8 +4,8 @@
     </form>
 
     @if (!is_null($members))
-        @if ($members->gym_access_expiration_date >= now()->format('Y-m-d') && $members->gym_membership_expiration_date >= now()->format('Y-m-d'))
-        {{         $this->savedAttendance($members)  }}
+        @if ( $this->checkIfAccessExpire() && $this->checkIfMembershipExpire() )
+            {{ $this->savedAttendance($members) }}
             <x-filament::card class="text-center">
                 <h2 style="font-size: 32px; text-align: center">Welcome Back {{ $members->full_name }}!</h2>
                 <p class="text-center">Access Granted!</p>
