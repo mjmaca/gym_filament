@@ -11,6 +11,7 @@ class GymAccessPlan extends Model
 protected $fillable = [
     'description',
     'price',
+    'branch_location',
     'duration',
 ];
 

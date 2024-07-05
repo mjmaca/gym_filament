@@ -5,6 +5,8 @@ namespace App\Filament\Resources;
 use App\Filament\Resources\GymAccessPlanResource\Pages;
 use App\Filament\Resources\GymAccessPlanResource\RelationManagers;
 use App\Models\GymAccessPlan;
+use App\Models\Branch;
+
 use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
@@ -23,7 +25,13 @@ class GymAccessPlanResource extends Resource
     public static function form(Form $form): Form
     {
         return $form
+            ->columns(2)
             ->schema([
+                Forms\Components\Select::make('branch_location')
+                    ->options(Branch::all()->pluck('name', 'name'))
+                    ->label("Branch Location")
+                    ->live()
+                    ->required(),
                 Forms\Components\TextInput::make('description')
                     ->required()
                     ->label('Description')
@@ -46,6 +54,7 @@ class GymAccessPlanResource extends Resource
     public static function table(Table $table): Table
     {
         return $table
+            ->defaultGroup('branch_location')
             ->columns([
                 Tables\Columns\TextColumn::make('description')
                     ->label('Description')

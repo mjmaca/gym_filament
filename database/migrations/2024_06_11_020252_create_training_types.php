@@ -14,6 +14,7 @@ return new class extends Migration
         Schema::create('training_types', function (Blueprint $table) {
             $table->id();
             $table->string('description');
+            $table->string('branch_location');
             $table->integer('session_number');
             $table->integer('session_price');
             $table->integer('session_duration');

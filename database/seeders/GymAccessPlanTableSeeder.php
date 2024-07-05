@@ -14,11 +14,36 @@ class GymAccessPlanTableSeeder extends Seeder
     public function run(): void
     {
         $branches = [
-            ['description' => '1 Day Access', 'price' => '179', 'duration' => '1'],
-            ['description' => '1 Month Access', 'price' => '1699', 'duration' => '30'],
-            ['description' => '3 Months Access', 'price' => '4199', 'duration' => '90'],
-            ['description' => '6 Months Access', 'price' => '6999', 'duration' => '180'],
-            ['description' => '1 Year Access', 'price' => '10799', 'duration' => '360'],
+            [
+                'description' => '1 Day Access',
+                'price' => '179',
+                'branch_location' => 'XGW - Francisco Homes SJDM',
+                'duration' => '1'
+            ],
+            [
+                'description' => '1 Month Access',
+                'price' => '1699',
+                'branch_location' => 'XGW - Francisco Homes SJDM',
+                'duration' => '30'
+            ],
+            [
+                'description' => '3 Months Access',
+                'price' => '4199',
+                'branch_location' => 'XGW - Francisco Homes SJDM',
+                'duration' => '90'
+            ],
+            [
+                'description' => '6 Months Access',
+                'price' => '6999',
+                'branch_location' => 'XGW - Francisco Homes SJDM',
+                'duration' => '180'
+            ],
+            [
+                'description' => '1 Year Access',
+                'price' => '10799',
+                'branch_location' => 'XGW - Francisco Homes SJDM',
+                'duration' => '360'
+            ],
         ];
 
         foreach ($branches as $branch) {

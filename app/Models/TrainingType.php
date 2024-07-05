@@ -13,7 +13,7 @@ protected $fillable = [
     'session_number',
     'session_price',
     'session_duration',
-
+    'branch_location',
 ];
 
 protected $casts = [

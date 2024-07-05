@@ -9,4 +9,9 @@ use Filament\Resources\Pages\CreateRecord;
 class CreateGymAccessPlan extends CreateRecord
 {
     protected static string $resource = GymAccessPlanResource::class;
+
+    protected function getRedirectUrl(): string
+    {
+        return $this->getResource()::getUrl('index');
+    }
 }

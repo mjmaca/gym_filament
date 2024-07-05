@@ -3,7 +3,8 @@
 namespace App\Filament\Resources;
 
 use App\Filament\Resources\TrainingTypeResource\Pages;
-use App\Filament\Resources\TrainingTypeResource\RelationManagers;
+use App\Models\Branch;
+
 use App\Models\TrainingType;
 use Filament\Forms;
 use Filament\Forms\Form;
@@ -23,8 +24,13 @@ class TrainingTypeResource extends Resource
     public static function form(Form $form): Form
     {
         return $form
+            ->columns(2)
             ->schema([
-
+                Forms\Components\Select::make('branch_location')
+                    ->options(Branch::all()->pluck('name', 'name'))
+                    ->label("Branch Location")
+                    ->live()
+                    ->required(),
                 Forms\Components\TextInput::make('description')
                     ->label('Description')
                     ->required(),
@@ -46,6 +52,7 @@ class TrainingTypeResource extends Resource
     public static function table(Table $table): Table
     {
         return $table
+            ->defaultGroup('branch_location')
             ->columns([
                 Tables\Columns\TextColumn::make('description')
                     ->label('Description')
