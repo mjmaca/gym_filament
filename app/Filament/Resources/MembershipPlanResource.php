@@ -12,8 +12,7 @@ use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
-use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\SoftDeletingScope;
+use Filament\Tables\Grouping\Group; 
 
 class MembershipPlanResource extends Resource
 {
@@ -71,6 +70,11 @@ class MembershipPlanResource extends Resource
             ])
             ->filters([
                 //
+            ])
+            ->groups([
+                Group::make('branch_location') 
+                    ->label('Branch Location')
+                    ->collapsible()
             ])
             ->actions([
                 Tables\Actions\EditAction::make(),

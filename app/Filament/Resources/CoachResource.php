@@ -11,8 +11,8 @@ use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
-use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\SoftDeletingScope;
+use Filament\Tables\Grouping\Group;
+
 
 class CoachResource extends Resource
 {
@@ -27,9 +27,9 @@ class CoachResource extends Resource
         return $form
             ->schema([
                 Forms\Components\Select::make('branch_location')
-                ->options(Branch::all()->pluck('name', 'name'))
-                ->label("Branch Location")
-                ->required(),
+                    ->options(Branch::all()->pluck('name', 'name'))
+                    ->label("Branch Location")
+                    ->required(),
                 Forms\Components\TextInput::make('employee_id')
                     ->label('Employee ID')
                     ->required(),
@@ -51,24 +51,31 @@ class CoachResource extends Resource
     public static function table(Table $table): Table
     {
         return $table
+            ->defaultGroup('branch_location')
+
             ->columns([
                 //
-            Tables\Columns\TextColumn::make('coach_name')
-                ->label('Coach Name')
-                ->searchable(),
-            Tables\Columns\TextColumn::make('contact_number')
-                ->label('Contact Number'),
-            Tables\Columns\TextColumn::make('address')
-                ->label('Address'),
-            Tables\Columns\TextColumn::make('branch_location')
-                ->label('Branch Location')
-                ->searchable(),
-            Tables\Columns\TextColumn::make('employee_id')
-                ->label('Employee ID')
-                ->searchable(),
+                Tables\Columns\TextColumn::make('coach_name')
+                    ->label('Coach Name')
+                    ->searchable(),
+                Tables\Columns\TextColumn::make('contact_number')
+                    ->label('Contact Number'),
+                Tables\Columns\TextColumn::make('address')
+                    ->label('Address'),
+                Tables\Columns\TextColumn::make('branch_location')
+                    ->label('Branch Location')
+                    ->searchable(),
+                Tables\Columns\TextColumn::make('employee_id')
+                    ->label('Employee ID')
+                    ->searchable(),
             ])
             ->filters([
                 //
+            ])
+            ->groups([
+                Group::make('branch_location')
+                    ->label('Branch Location')
+                    ->collapsible()
             ])
             ->actions([
                 Tables\Actions\EditAction::make(),
