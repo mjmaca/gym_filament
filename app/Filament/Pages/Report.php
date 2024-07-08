@@ -144,7 +144,9 @@ class Report extends Page
     {
         $response = [];
 
-        $allData = GymAccessPlan::all();
+        $allData = GymAccessPlan::where('branch_location', $this->branchLocation)->get()
+            ->sortBy('description');
+
         foreach ($allData as $data) {
             $filterData = Payment::where('gym_access_plan', $data->description)->where('branch_location', $this->branchLocation);
             $getDiscount = $filterData->sum('gym_access_discount') / 100 * $data->price;
@@ -167,7 +169,7 @@ class Report extends Page
     {
         $response = [];
 
-        $allData = TrainingType::all();
+        $allData = TrainingType::where('branch_location', $this->branchLocation)->get();
 
         foreach ($allData as $data) {
             // Check if $data is already in $response

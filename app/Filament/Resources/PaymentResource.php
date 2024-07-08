@@ -193,7 +193,9 @@ class PaymentResource extends Resource
                     ->collapsible(true)
                     ->schema([
                         Forms\Components\Select::make('gym_access_plan')
-                            ->options(fn($get) => GymAccessPlan::where('branch_location', $get('selectedMember.branch_location'))->pluck('description', 'description'))
+                            ->options(fn($get) => GymAccessPlan::where('branch_location', $get('selectedMember.branch_location'))
+                                ->orderBy('description')
+                                ->pluck('description', 'description'))
                             ->label("Gym Access Plan")
                             ->live()
                             ->afterStateUpdated(function (callable $set, $state, $get) {

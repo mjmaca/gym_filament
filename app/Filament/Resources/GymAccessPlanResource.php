@@ -55,6 +55,7 @@ class GymAccessPlanResource extends Resource
     {
         return $table
             ->defaultGroup('branch_location')
+            ->defaultSort('description')
             ->columns([
                 Tables\Columns\TextColumn::make('description')
                     ->label('Description')
