@@ -24,11 +24,15 @@ class Dashboard extends BasePage
 
     public $endDate;
 
+    public $shiftTime;
+
+
     public function mount()
     {
         $this->branchLocation = Branch::first()->name;
         $this->startDate = Carbon::now();
         $this->endDate = Carbon::today();
+        $this->shiftTime = 'ALL';
     }
 
     public function filtersForm(Form $form): Form
@@ -37,7 +41,7 @@ class Dashboard extends BasePage
             ->schema([
                 Section::make()
                     ->schema([
-                      Select::make('branch_location')
+                        Select::make('branch_location')
                             ->label("Select Branch Location")
                             ->options(Branch::all()->pluck('name', 'name'))
                             ->default(Branch::first()->name)
@@ -56,8 +60,19 @@ class Dashboard extends BasePage
                             ->afterStateUpdated(function (callable $set, $get) {
                                 $set('endDate', $get('end_date'));
                             }),
+                        Select::make('shift_time')
+                            ->label("Select Shift Schedule")
+                            ->options([
+                                'AM' => 'AM Shift',
+                                'PM' => 'PM Shift',
+                                'ALL' => 'All Shift',
+                            ])
+                            ->default('ALL')
+                            ->afterStateUpdated(function (callable $set, $state) {
+                                $this->shiftTime = $state;
+                            }),
                     ])
-                    ->columns(3),
+                    ->columns(4),
             ]);
     }
 }

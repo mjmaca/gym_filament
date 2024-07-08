@@ -18,11 +18,32 @@ class MemberOverview extends BaseWidget
         $branchLocation = $this->filters['branch_location'];
         $startDate = $this->filters['start_date'] ?? Carbon::today();
         $endDate = $this->filters['end_date'] ?? Carbon::today();
+        $shiftTime = $this->filters['shift_time'];
+
         // Initialize the query builder
         $queryMember = Member::query();
 
-        $queryMember->whereBetween('created_at', [Carbon::parse($startDate)->startOfDay(), Carbon::parse($endDate)->endOfDay()])
-            ->where('branch_location', $branchLocation);
+        if ($shiftTime === 'ALL') {
+            $queryMember
+                ->whereBetween('created_at', [Carbon::parse($startDate)->startOfDay(), Carbon::parse($endDate)->endOfDay()])
+                ->where('branch_location', $branchLocation);
+        } else {
+            // Combined AM/PM condition
+            $queryMember
+                ->whereBetween('created_at', [Carbon::parse($startDate)->startOfDay(), Carbon::parse($endDate)->endOfDay()])
+                ->where('branch_location', $branchLocation)
+                ->where(function ($query) use ($shiftTime) {
+                    if ($shiftTime === 'AM') {
+                        $query->whereTime('created_at', '>=', '00:00:00')
+                            ->whereTime('created_at', '<', '12:00:00');
+                    } else { // Assumes PM if not ALL or AM
+                        $query->whereTime('created_at', '>=', '12:00:00')
+                            ->whereTime('created_at', '<=', '23:59:59');
+                    }
+                });
+        }
+
+        logger($queryMember->get());
 
         $memberCount = clone $queryMember;
         $guestCount = clone $queryMember;

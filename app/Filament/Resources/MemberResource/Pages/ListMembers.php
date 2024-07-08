@@ -15,7 +15,7 @@ use Filament\Forms\Components\Section;
 use Filament\Pages\Dashboard\Concerns\HasFiltersForm;
 
 class ListMembers extends ListRecords
-{    
+{
     use HasFiltersForm;
 
     protected static string $resource = MemberResource::class;
@@ -34,8 +34,16 @@ class ListMembers extends ListRecords
                             ->label('Select Start Date'),
                         DatePicker::make('end_date')
                             ->label('Select End Date'),
+                        Select::make('shift_time')
+                            ->label("Select Shift Schedule")
+                            ->options([
+                                'AM' => 'AM Shift',
+                                'PM' => 'PM Shift',
+                                'ALL' => 'All Shift',
+                            ])
+                            ->default('ALL')
                     ])
-                    ->columns(3),
+                    ->columns(4),
             ]);
     }
 
@@ -54,5 +62,5 @@ class ListMembers extends ListRecords
         ];
     }
 
-   
+
 }
