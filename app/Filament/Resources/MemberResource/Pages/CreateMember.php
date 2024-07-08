@@ -16,5 +16,11 @@ class CreateMember extends CreateRecord
     {
         return PaymentResource::getUrl('create');
     }
+
+    //dont remove this because the membership_id not working in create page when remove this.!!!
+    protected function mutateFormDataBeforeCreate(array $data): array
+    {
+        return $this->data;
+    }
 }
 

@@ -103,7 +103,10 @@ class QRScanner extends Page implements Tables\Contracts\HasTable
             Tables\Columns\BooleanColumn::make('is_guest')
                 ->label('Is Member')
                 ->sortable()
-                ->searchable(),
+                ->searchable()
+                ->getStateUsing(function (Attendance $record): bool {
+                    return !$record->is_guest; // Invert the value
+                }),
         ];
     }
 

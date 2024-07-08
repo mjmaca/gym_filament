@@ -62,7 +62,6 @@ class MemberResource extends Resource
                                 }
                             }),
                         Forms\Components\TextInput::make('membership_id')
-                            ->unique(Member::class, 'membership_id', fn($record) => $record)
                             ->disabled()
                             ->label("Membership ID"),
                         Forms\Components\TextInput::make('full_name')
@@ -135,7 +134,11 @@ class MemberResource extends Resource
                 Tables\Columns\BooleanColumn::make('is_guest')
                     ->label('Is Member')
                     ->sortable()
-                    ->searchable(),
+                    ->searchable()
+                    ->getStateUsing(function (Member $record): bool {
+                        return !$record->is_guest; // Invert the value
+                    }),
+                  
 
             ])
             ->filters([
