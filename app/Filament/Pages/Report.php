@@ -104,8 +104,19 @@ class Report extends Page
                             ->afterStateUpdated(function (callable $set, $state) {
                                 $this->endDate = $state;
                             }),
+                            Select::make('shift_time')
+                            ->label("Select Shift Schedule")
+                            ->options([
+                                'AM' => 'AM Shift',
+                                'PM' => 'PM Shift',
+                                'ALL' => 'All Shift',
+                            ])
+                            ->default('ALL')
+                            ->afterStateUpdated(function (callable $set, $state) {
+                                $this->shiftTime = $state;
+                            }),
                     ])
-                    ->columns(3),
+                    ->columns(4),
             ]);
     }
 
