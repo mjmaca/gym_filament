@@ -43,6 +43,7 @@ class MembersxChart extends ChartWidget
                     }
                 });
         }
+        
         $cloneMemberData = clone $queryMember;
         $cloneGuestData = clone $queryMember;
 

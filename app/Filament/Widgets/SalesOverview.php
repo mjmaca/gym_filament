@@ -16,19 +16,53 @@ class SalesOverview extends BaseWidget
 
     protected function getStats(): array
     {
-
         $branchLocation = $this->filters['branch_location'];
         $startDate = $this->filters['start_date'] ?? Carbon::today();
         $endDate = $this->filters['end_date'] ?? Carbon::today();
+        $shiftTime = $this->filters['shift_time'];
 
-        // Apply date range filter if both dates are provided
-        $thisMonthExpensesTotal = Expense::whereBetween('created_at', [Carbon::parse($startDate)->startOfDay(), Carbon::parse($endDate)->endOfDay()])
-            ->where('branch_location', $branchLocation)
-            ->sum('amount');
+        $queryPayment = Payment::query();
+        $queryExpense = Expense::query();
 
-        $thisMonthGrossSalesTotal = Payment::whereBetween('created_at', [Carbon::parse($startDate)->startOfDay(), Carbon::parse($endDate)->endOfDay()])
+        if ($shiftTime === 'ALL') {
+            $queryPayment
+                ->whereBetween('created_at', [Carbon::parse($startDate)->startOfDay(), Carbon::parse($endDate)->endOfDay()])
+                ->where('branch_location', $branchLocation);
+            $queryExpense
+                ->whereBetween('created_at', [Carbon::parse($startDate)->startOfDay(), Carbon::parse($endDate)->endOfDay()])
+                ->where('branch_location', $branchLocation);
+                    } else {
+            // Combined AM/PM condition
+            $queryPayment
+                ->whereBetween('created_at', [Carbon::parse($startDate)->startOfDay(), Carbon::parse($endDate)->endOfDay()])
+                ->where('branch_location', $branchLocation)
+                ->where(function ($query) use ($shiftTime) {
+                    if ($shiftTime === 'AM') {
+                        $query->whereTime('created_at', '>=', '00:00:00')
+                            ->whereTime('created_at', '<', '12:00:00');
+                    } else { // Assumes PM if not ALL or AM
+                        $query->whereTime('created_at', '>=', '12:00:00')
+                            ->whereTime('created_at', '<=', '23:59:59');
+                    }
+                });
+                  // Combined AM/PM condition
+            $queryExpense
+            ->whereBetween('created_at', [Carbon::parse($startDate)->startOfDay(), Carbon::parse($endDate)->endOfDay()])
             ->where('branch_location', $branchLocation)
-            ->sum('amount');
+            ->where(function ($query) use ($shiftTime) {
+                if ($shiftTime === 'AM') {
+                    $query->whereTime('created_at', '>=', '00:00:00')
+                        ->whereTime('created_at', '<', '12:00:00');
+                } else { // Assumes PM if not ALL or AM
+                    $query->whereTime('created_at', '>=', '12:00:00')
+                        ->whereTime('created_at', '<=', '23:59:59');
+                }
+            });
+        }
+
+// Apply date range filter if both dates are provided
+$thisMonthExpensesTotal = $queryPayment->sum('amount');
+        $thisMonthGrossSalesTotal = $queryExpense->sum('amount');
 
         $thisMonthNetProfit = $thisMonthGrossSalesTotal - $thisMonthExpensesTotal;
 

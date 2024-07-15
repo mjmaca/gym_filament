@@ -16,20 +16,38 @@ class PaymentChart extends ChartWidget
         $branchLocation = $this->filters['branch_location'];
         $startDate = $this->filters['start_date'] ?? Carbon::today();
         $endDate = $this->filters['end_date'] ?? Carbon::today();
+        $shiftTime = $this->filters['shift_time'];
 
         // Initialize the query builder
         $queryPayment = Payment::query();
+
+        if ($shiftTime === 'ALL') {
+            $queryPayment
+                ->whereBetween('created_at', [Carbon::parse($startDate)->startOfDay(), Carbon::parse($endDate)->endOfDay()])
+                ->where('branch_location', $branchLocation);
+        } else {
+            // Combined AM/PM condition
+            $queryPayment
+                ->whereBetween('created_at', [Carbon::parse($startDate)->startOfDay(), Carbon::parse($endDate)->endOfDay()])
+                ->where('branch_location', $branchLocation)
+                ->where(function ($query) use ($shiftTime) {
+                    if ($shiftTime === 'AM') {
+                        $query->whereTime('created_at', '>=', '00:00:00')
+                            ->whereTime('created_at', '<', '12:00:00');
+                    } else { // Assumes PM if not ALL or AM
+                        $query->whereTime('created_at', '>=', '12:00:00')
+                            ->whereTime('created_at', '<=', '23:59:59');
+                    }
+                });
+        }
 
         $cloneTransactionAmount = clone $queryPayment;
         $cloneTransactionSubscription = clone $queryPayment;
 
         //Get the total amount per branch and group into month
         $cloneTransactionAmount
-        ->where('branch_location', $branchLocation)
-        ->whereBetween('created_at', [Carbon::parse($startDate)->startOfDay(), Carbon::parse($endDate)->endOfDay()])
         ->selectRaw('EXTRACT(MONTH FROM created_at) as month, SUM(amount) as total_amount')
         ->groupByRaw('EXTRACT(MONTH FROM created_at)');
-
 
         $payments = $cloneTransactionAmount->get();
         $paymentsData = array_fill(0, 12, 0); // Initialize an array with 12 zeros for each month
@@ -40,8 +58,6 @@ class PaymentChart extends ChartWidget
 
         //Get the total subscriber per branch and group into month
         $cloneTransactionSubscription
-        ->where('branch_location', $branchLocation)
-        ->whereBetween('created_at', [Carbon::parse($startDate)->startOfDay(), Carbon::parse($endDate)->endOfDay()])
         ->selectRaw('EXTRACT(MONTH FROM created_at) as month, count(*) as count');
 
         $subscriptions = $cloneTransactionSubscription->groupByRaw('EXTRACT(MONTH FROM created_at)')->get();
