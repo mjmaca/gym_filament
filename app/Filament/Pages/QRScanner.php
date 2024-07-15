@@ -23,7 +23,7 @@ class QRScanner extends Page implements Tables\Contracts\HasTable
     protected static string $view = 'filament.pages.q-r-scanner';
 
     protected static ?string $navigationLabel = 'Checking Logs';
-    protected ?string $heading = 'Checking Logs';
+    protected ?string $heading = 'Check-in Logs';
 
     public $membership_id;
 

@@ -43,8 +43,6 @@ class MemberOverview extends BaseWidget
                 });
         }
 
-        logger($queryMember->get());
-
         $memberCount = clone $queryMember;
         $guestCount = clone $queryMember;
 

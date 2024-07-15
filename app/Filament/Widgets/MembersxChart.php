@@ -19,18 +19,36 @@ class MembersxChart extends ChartWidget
         $branchLocation = $this->filters['branch_location'];
         $startDate = $this->filters['start_date'] ?? Carbon::today();
         $endDate = $this->filters['end_date'] ?? Carbon::today();
+        $shiftTime = $this->filters['shift_time'];
 
         // Initialize the query builder
         $queryMember = Member::query();
 
+        if ($shiftTime === 'ALL') {
+            $queryMember
+                ->whereBetween('created_at', [Carbon::parse($startDate)->startOfDay(), Carbon::parse($endDate)->endOfDay()])
+                ->where('branch_location', $branchLocation);
+        } else {
+            // Combined AM/PM condition
+            $queryMember
+                ->whereBetween('created_at', [Carbon::parse($startDate)->startOfDay(), Carbon::parse($endDate)->endOfDay()])
+                ->where('branch_location', $branchLocation)
+                ->where(function ($query) use ($shiftTime) {
+                    if ($shiftTime === 'AM') {
+                        $query->whereTime('created_at', '>=', '00:00:00')
+                            ->whereTime('created_at', '<', '12:00:00');
+                    } else { // Assumes PM if not ALL or AM
+                        $query->whereTime('created_at', '>=', '12:00:00')
+                            ->whereTime('created_at', '<=', '23:59:59');
+                    }
+                });
+        }
         $cloneMemberData = clone $queryMember;
         $cloneGuestData = clone $queryMember;
 
         //Get the total of all member per branch
         $cloneMemberData
-            ->where('branch_location', $branchLocation)
             ->where('is_guest', false)
-            ->whereBetween('created_at', [Carbon::parse($startDate)->startOfDay(), Carbon::parse($endDate)->endOfDay()])
             ->selectRaw('EXTRACT(MONTH FROM created_at) as month, count(*) as count');
 
         $members = $cloneMemberData->groupByRaw('EXTRACT(MONTH FROM created_at)')->get();
@@ -43,9 +61,7 @@ class MembersxChart extends ChartWidget
 
         //Get the total of all guest per branch
         $cloneGuestData
-            ->where('branch_location', $branchLocation)
             ->where('is_guest', true)
-            ->whereBetween('created_at', [Carbon::parse($startDate)->startOfDay(), Carbon::parse($endDate)->endOfDay()])
             ->selectRaw('EXTRACT(MONTH FROM created_at) as month, count(*) as count');
 
         $guests = $cloneGuestData->groupByRaw('EXTRACT(MONTH FROM created_at)')->get();
