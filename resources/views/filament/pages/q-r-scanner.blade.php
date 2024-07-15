@@ -5,18 +5,23 @@
     </form>
 
     @if (!is_null($members))
-        @if ( $this->checkIfAccessExpire() && $this->checkIfMembershipExpire() )
+        @if ($this->checkIfAccessExpire() && $this->checkIfMembershipExpire())
             {{ $this->savedAttendance($members) }}
             <x-filament::card class="text-center">
                 <h2 style="text-align: center">Welcome Back {{ $members->full_name }}!</h2>
                 <p class="text-center">Access Granted!</p>
             </x-filament::card>
+        @elseif ($this->checkIfMembershipExpire())
+            <x-filament::card class="text-center">
+                <h2 style="text-align: center">Hi {{ $members->full_name }}!</h2>
+                <p class="text-center">Your gym membership has expired. Please contact our staff for assistance.</p>
+            </x-filament::card>
         @else
             <x-filament::card class="text-center">
                 <h2 style="text-align: center">Hi {{ $members->full_name }}!
                 </h2>
-                <p class="text-center">Your gym membership or access has expired. Please contact our staff for
-                    assistance.</p>
+                <p class="text-center">Your gym access has expired. Please contact our staff for assistance.</p>
+                assistance.</p>
             </x-filament::card>
         @endif
     @else
