@@ -123,14 +123,4 @@ class QRScanner extends Page implements Tables\Contracts\HasTable
             // Define your actions here
         ];
     }
-
-    // protected function getTableBulkActions(): array
-    // {
-    //     return [
-    //         Tables\Actions\BulkActionGroup::make([
-    //             Tables\Actions\DeleteBulkAction::make(),
-    //         ]),
-    //     ];
-    // }
-
 }

@@ -32,6 +32,7 @@
 
     <div style="text-align: end">
         <x-filament::button style="width: 155px;"
+            class="mb-4"
             onclick="window.location='{{ route('filament.pages.create-attendance') }}'">Create
             Attendance
         </x-filament::button>
