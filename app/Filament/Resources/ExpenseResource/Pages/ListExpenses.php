@@ -14,7 +14,7 @@ use Filament\Forms\Components\Section;
 use Filament\Pages\Dashboard\Concerns\HasFiltersForm;
 
 class ListExpenses extends ListRecords
-{   
+{
     use HasFiltersForm;
 
     protected static string $resource = ExpenseResource::class;
@@ -34,8 +34,19 @@ class ListExpenses extends ListRecords
                             ->label('Select Start Date'),
                         DatePicker::make('end_date')
                             ->label('Select End Date'),
+                        Select::make('shift_time')
+                            ->label("Select Shift Schedule")
+                            ->options([
+                                'AM' => 'AM Shift',
+                                'PM' => 'PM Shift',
+                                'ALL' => 'All Shift',
+                            ])
+                            ->default('ALL')
+                            ->afterStateUpdated(function (callable $set, $state) {
+                                $this->shiftTime = $state;
+                            }),
                     ])
-                    ->columns(3),
+                    ->columns(4),
             ]);
     }
 
@@ -50,7 +61,7 @@ class ListExpenses extends ListRecords
     {
         return [
             Actions\CreateAction::make()
-            ->label("Create Expense"),
+                ->label("Create Expense"),
         ];
     }
 }
