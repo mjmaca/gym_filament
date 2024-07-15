@@ -379,8 +379,12 @@ class PaymentResource extends Resource
                             ->content(fn($get) => 'PHP ' . number_format(self::calculateTotalAmount($get), 2, '.', ',')),
                     ]),
                 Section::make('Payment')
-                    ->columns(2)
+                    ->columns(3)
                     ->schema([
+                        Forms\Components\TextInput::make('reference_no')
+                            ->label("Reference No.")
+                            ->required(),
+
                         Forms\Components\Select::make('payment_method')
                             ->label("Payment Method")
                             ->required()

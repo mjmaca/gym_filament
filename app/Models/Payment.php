@@ -36,6 +36,7 @@ protected $fillable = [
     'pt_session_total',
     'pt_session_used',
     
+    'reference_no',
     'payment_method',
     'amount',
 ];

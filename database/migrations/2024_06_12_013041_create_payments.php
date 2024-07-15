@@ -43,6 +43,7 @@ return new class extends Migration {
             $table->integer('pt_session_used')->default(0); // Not nullable, default value 0
 
             // //Payment
+            $table->string('reference_no');
             $table->string('payment_method');
             $table->float('amount', 8, 2);
 
