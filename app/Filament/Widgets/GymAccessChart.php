@@ -1,15 +1,16 @@
 <?php
 
 namespace App\Filament\Widgets;
+
 use App\Models\Payment;
 use Filament\Widgets\ChartWidget;
 use Carbon\Carbon;
 use Filament\Widgets\Concerns\InteractsWithPageFilters;
 
-class PaymentChart extends ChartWidget
+class GymAccessChart extends ChartWidget
 {
     use InteractsWithPageFilters;
-    protected static ?string $heading = 'Payments Chart';
+    protected static ?string $heading = 'Gym Access Statistics';
 
     protected function getData(): array
     {
@@ -19,15 +20,15 @@ class PaymentChart extends ChartWidget
         $shiftTime = $this->filters['shift_time'];
 
         // Initialize the query builder
-        $queryPayment = Payment::query();
+        $queryGymAccess = Payment::query();
 
         if ($shiftTime === 'ALL') {
-            $queryPayment
+            $queryGymAccess
                 ->whereBetween('created_at', [Carbon::parse($startDate)->startOfDay(), Carbon::parse($endDate)->endOfDay()])
                 ->where('branch_location', $branchLocation);
         } else {
             // Combined AM/PM condition
-            $queryPayment
+            $queryGymAccess
                 ->whereBetween('created_at', [Carbon::parse($startDate)->startOfDay(), Carbon::parse($endDate)->endOfDay()])
                 ->where('branch_location', $branchLocation)
                 ->where(function ($query) use ($shiftTime) {
@@ -41,41 +42,19 @@ class PaymentChart extends ChartWidget
                 });
         }
 
-        $cloneTransactionAmount = clone $queryPayment;
-        $cloneTransactionSubscription = clone $queryPayment;
-
-        //Get the total amount per branch and group into month
-        $cloneTransactionAmount
-        ->selectRaw('EXTRACT(MONTH FROM created_at) as month, SUM(amount) as total_amount')
-        ->groupByRaw('EXTRACT(MONTH FROM created_at)');
-
-        $payments = $cloneTransactionAmount->get();
-        $paymentsData = array_fill(0, 12, 0); // Initialize an array with 12 zeros for each month
-
-        foreach ($payments as $payment) {
-            $paymentsData[$payment->month - 1] = $payment->total_amount; // -1 because array index starts at 0
-        }
-
-        //Get the total subscriber per branch and group into month
-        $cloneTransactionSubscription
-        ->selectRaw('EXTRACT(MONTH FROM created_at) as month, count(*) as count');
-
-        $subscriptions = $cloneTransactionSubscription->groupByRaw('EXTRACT(MONTH FROM created_at)')->get();
-        $subscriptionsData = array_fill(0, 12, 0); // Initialize an array with 12 zeros for each month
-
-        foreach ($subscriptions as $subscription) {
-            $subscriptionsData[$subscription->month - 1] = $subscription->count; // -1 because array index starts at 0
-        }
-
         return [
             'datasets' => [
                 [
-                    'label' => 'Transaction Amount',
-                    'data' => $paymentsData,
+                    'label' => 'Active Member',
+                    'data' => '200',
+                    'backgroundColor' => '#98FF98',
+                    'borderColor' => '#98FF98',
                 ],
                 [
-                    'label' => 'Transaction Subscriber',
-                    'data' => $subscriptionsData,
+                    'label' => 'Inactive Member',
+                    'data' => '300',
+                    'backgroundColor' => '#FFC0CB',
+                    'borderColor' => '#FFC0CB',
                 ],
             ],
             'labels' => ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],

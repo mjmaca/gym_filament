@@ -9,10 +9,10 @@ use Filament\Widgets\ChartWidget;
 use Carbon\Carbon;
 use Filament\Widgets\Concerns\InteractsWithPageFilters;
 
-class MembersxChart extends ChartWidget
+class GymMembershipChart extends ChartWidget
 {
     use InteractsWithPageFilters;
-    protected static ?string $heading = 'Members Chart';
+    protected static ?string $heading = 'Gym Membership Statistics';
 
     protected function getData(): array
     {
@@ -43,9 +43,8 @@ class MembersxChart extends ChartWidget
                     }
                 });
         }
-        
+
         $cloneMemberData = clone $queryMember;
-        $cloneGuestData = clone $queryMember;
 
         //Get the total of all member per branch
         $cloneMemberData
@@ -60,30 +59,31 @@ class MembersxChart extends ChartWidget
             $memberData[$member->month - 1] = $member->count; // -1 because array index starts at 0
         }
 
-        //Get the total of all guest per branch
-        $cloneGuestData
-            ->where('is_guest', true)
-            ->selectRaw('EXTRACT(MONTH FROM created_at) as month, count(*) as count');
-
-        $guests = $cloneGuestData->groupByRaw('EXTRACT(MONTH FROM created_at)')->get();
-
-        $guestData = array_fill(0, 12, 0); // Initialize an array with 12 zeros for each month
-
-        foreach ($guests as $guest) {
-            $guestData[$guest->month - 1] = $guest->count; // -1 because array index starts at 0
-        }
-
         return [
             'datasets' => [
                 [
-                    'label' => 'Members',
-                    'data' => $memberData,
+                    'label' => 'Newly Joined Gold Members',
+                    'data' => '100',
+                    'backgroundColor' => '#008000',
+                    'borderColor' => '#008000',
+                ],
+                [
+                    'label' => 'Newly Joined Silver Members',
+                    'data' => '200',
+                    'backgroundColor' => '#E6E6FA',
+                    'borderColor' => '#E6E6FA',
+                ],
+                [
+                    'label' => 'Renewed Gold Membership',
+                    'data' => '300',
                     'backgroundColor' => '#FFFF00',
                     'borderColor' => '#FFFF00',
                 ],
                 [
-                    'label' => 'Guest',
-                    'data' => $guestData,
+                    'label' => 'Renewed Silver Membership',
+                    'data' => '400',
+                    'backgroundColor' => '#00FFFF',
+                    'borderColor' => '#00FFFF',
                 ],
             ],
             'labels' => ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
