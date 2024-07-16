@@ -61,7 +61,7 @@ class ListExpenses extends ListRecords
     {
         return [
             Actions\CreateAction::make()
-                ->label("Create Expense"),
+                ->label("Create New Expense"),
         ];
     }
 }

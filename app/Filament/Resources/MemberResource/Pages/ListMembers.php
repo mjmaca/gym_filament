@@ -58,7 +58,7 @@ class ListMembers extends ListRecords
     {
         return [
             Actions\CreateAction::make()
-                ->label("Create Member"),
+                ->label("Create New Member"),
         ];
     }
 

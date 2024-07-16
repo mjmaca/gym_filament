@@ -14,7 +14,7 @@ class ListCoaches extends ListRecords
     {
         return [
             Actions\CreateAction::make()
-            ->label("Create Coach"),
+            ->label("Create New Coach"),
         ];
     }
 }
