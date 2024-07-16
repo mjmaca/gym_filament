@@ -3,9 +3,11 @@
 namespace App\Filament\Widgets;
 
 use App\Models\Payment;
+use App\Models\Attendance;
 use Filament\Widgets\ChartWidget;
 use Carbon\Carbon;
 use Filament\Widgets\Concerns\InteractsWithPageFilters;
+use Illuminate\Support\Facades\DB;
 
 class GymAccessChart extends ChartWidget
 {
@@ -42,17 +44,31 @@ class GymAccessChart extends ChartWidget
                 });
         }
 
+        $activeMembers = Attendance::select('membership_id', DB::raw('EXTRACT(MONTH FROM created_at) as month'))
+            ->where('created_at', '>=', Carbon::now()->subDays(7))
+            ->where('branch_location', $branchLocation)
+            ->havingRaw('COUNT(*) >= 3')
+            ->groupBy('membership_id', 'month')
+            ->get();
+
+        $monthlyMemberCounts = array_fill(0, 12, 0); // Initialize an array with 12 zeros
+
+        foreach ($activeMembers as $member) {
+            $monthlyMemberCounts[$member->month - 1]++;
+        }
+
+
         return [
             'datasets' => [
                 [
                     'label' => 'Active Member',
-                    'data' => '200',
+                    'data' => $monthlyMemberCounts,
                     'backgroundColor' => '#98FF98',
                     'borderColor' => '#98FF98',
                 ],
                 [
                     'label' => 'Inactive Member',
-                    'data' => '300',
+                    'data' => '100',
                     'backgroundColor' => '#FFC0CB',
                     'borderColor' => '#FFC0CB',
                 ],

@@ -27,13 +27,13 @@ class MembershipPlanOverview extends BaseWidget
 
         if ($shiftTime === 'ALL') {
             $queryMember
-                ->whereBetween('created_at', [Carbon::parse($startDate)->startOfDay(), Carbon::parse($endDate)->endOfDay()])
+                ->whereDate('created_at', Carbon::today())
                 ->where('branch_location', $branchLocation);
         } else {
             // Combined AM/PM condition
             $queryMember
-                ->whereBetween('created_at', [Carbon::parse($startDate)->startOfDay(), Carbon::parse($endDate)->endOfDay()])
-                ->where('branch_location', $branchLocation)
+            ->whereDate('created_at', Carbon::today())
+            ->where('branch_location', $branchLocation)
                 ->where(function ($query) use ($shiftTime) {
                     if ($shiftTime === 'AM') {
                         $query->whereTime('created_at', '>=', '00:00:00')
@@ -48,9 +48,16 @@ class MembershipPlanOverview extends BaseWidget
         $newlyGoldMembership = clone $queryMember;
         $newlySilverMembership = clone $queryMember;
 
-        $memberCounts = $queryMember->where('is_guest', false)->count();
-        $newlyGoldMembership = $newlyGoldMembership->where('gym_membership_type', 'Gold Membership')->count();
-        $newlySilverMembership = $newlySilverMembership->where('gym_membership_type', 'Silver Membership')->count();
+        $memberCounts = $queryMember
+        ->where('is_guest', false)->count(); //Totol member in selected date range
+
+        $newlyGoldMembership = $newlyGoldMembership
+            ->where('gym_membership_type', 'Gold Membership')
+            ->count();
+
+        $newlySilverMembership = $newlySilverMembership
+            ->where('gym_membership_type', 'Silver Membership')
+            ->count();
 
         return [
             Stat::make('Newly Joined Gold Member', $newlyGoldMembership),

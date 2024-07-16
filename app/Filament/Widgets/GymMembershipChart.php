@@ -26,12 +26,12 @@ class GymMembershipChart extends ChartWidget
 
         if ($shiftTime === 'ALL') {
             $queryMember
-                ->whereBetween('created_at', [Carbon::parse($startDate)->startOfDay(), Carbon::parse($endDate)->endOfDay()])
+                ->whereDate('created_at', Carbon::today())
                 ->where('branch_location', $branchLocation);
         } else {
             // Combined AM/PM condition
             $queryMember
-                ->whereBetween('created_at', [Carbon::parse($startDate)->startOfDay(), Carbon::parse($endDate)->endOfDay()])
+                ->whereDate('created_at', Carbon::today())
                 ->where('branch_location', $branchLocation)
                 ->where(function ($query) use ($shiftTime) {
                     if ($shiftTime === 'AM') {
@@ -44,32 +44,47 @@ class GymMembershipChart extends ChartWidget
                 });
         }
 
-        $cloneMemberData = clone $queryMember;
+        $GoldMemberData = clone $queryMember;
+        $SilverMemberData = clone $queryMember;
 
-        //Get the total of all member per branch
-        $cloneMemberData
+        //Get the gold membership total of all member per branch
+        $GoldMemberData
             ->where('is_guest', false)
+            ->where('gym_membership_type', 'Gold Membership')
             ->selectRaw('EXTRACT(MONTH FROM created_at) as month, count(*) as count');
 
-        $members = $cloneMemberData->groupByRaw('EXTRACT(MONTH FROM created_at)')->get();
+        $Goldmembers = $GoldMemberData->groupByRaw('EXTRACT(MONTH FROM created_at)')->get();
 
-        $memberData = array_fill(0, 12, 0); // Initialize an array with 12 zeros for each month
+        $GoldMemberData = array_fill(0, 12, 0); // Initialize an array with 12 zeros for each month
 
-        foreach ($members as $member) {
-            $memberData[$member->month - 1] = $member->count; // -1 because array index starts at 0
+        foreach ($Goldmembers as $Goldmember) {
+            $GoldMemberData[$Goldmember->month - 1] = $Goldmember->count; // -1 because array index starts at 0
+        }
+
+        //Get the Silver membership total of all member per branch
+        $SilverMemberData
+            ->where('is_guest', false)
+            ->where('gym_membership_type', 'Silver Membership')
+            ->selectRaw('EXTRACT(MONTH FROM created_at) as month, count(*) as count');
+
+        $SilverMembers = $SilverMemberData->groupByRaw('EXTRACT(MONTH FROM created_at)')->get();
+        $SilverMemberData = array_fill(0, 12, 0); // Initialize an array with 12 zeros for each month
+
+        foreach ($SilverMembers as $SilverMember) {
+            $SilverMemberData[$SilverMember->month - 1] = $SilverMember->count; // -1 because array index starts at 0
         }
 
         return [
             'datasets' => [
                 [
                     'label' => 'Newly Joined Gold Members',
-                    'data' => '100',
+                    'data' => $GoldMemberData,
                     'backgroundColor' => '#008000',
                     'borderColor' => '#008000',
                 ],
                 [
                     'label' => 'Newly Joined Silver Members',
-                    'data' => '200',
+                    'data' => $SilverMemberData,
                     'backgroundColor' => '#E6E6FA',
                     'borderColor' => '#E6E6FA',
                 ],
